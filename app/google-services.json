@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "221658713400",
+    "project_id": "keeprunning-e806b",
+    "storage_bucket": "keeprunning-e806b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:221658713400:android:9c870071e26f5ac262c5cd",
+        "android_client_info": {
+          "package_name": "br.edu.utfpr.trabalhoconclusaocurso"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5sd_NL1UYpJxMnBkzGi1g_xkEtPHDmxQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

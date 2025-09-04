@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">KeepRunning</string>
+    <string name="app_logo_desc">Logo do aplicativo</string>
+    <string name="app_welcome">Bem-vindo ao KeepRunnig</string>
+    <string name="login">Entrar</string>
+    <string name="signup">Criar conta</string>
+    <string name="app_version">Versão 0.1</string>
+    <string name="background_desc">Backgroud Image</string>
+
+    <string name="login_title">Faça seu login</string>
+    <string name="username">Nome de usuário:</string>
+    <string name="password">Senha:</string>
+    <string name="login_button">Entrar</string>
+    <string name="forgot_password">Esqueci minha senha</string>
+    <string name="dont_have_account">Não tem uma conta?</string>
+    <string name="username_required">Nome de usuário é obrigatório</string>
+    <string name="password_required">Senha é obrigatória</string>
+    <string name="invalid_credentials">Usuário ou senha inválidos</string>
+
+    <string name="username_label">Nome:</string>
+    <string name="cpf_label">CPF:</string>
+    <string name="peso_label">Peso:</string>
+    <string name="altura_label">Altura:</string>
+    <string name="distancia_label">Meta de distancia a ser percorrida (Km):</string>
+
+
+
+</resources>

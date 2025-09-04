@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/main"
+    tools:context=".activities.MainActivity">
+
+    <!-- Imagem de fundo que se adapta à tela -->
+    <ImageView
+        android:id="@+id/background_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/keep_runnig_background"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/background_desc" />
+
+    <!-- Overlay escuro para melhor contraste -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#66000000" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center">
+
+
+        <!-- Título -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_welcome"
+            android:textSize="24sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:layout_marginBottom="60dp" />
+
+        <!-- Container dos botões -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <!-- Botão de Login -->
+            <Button
+                android:id="@+id/login_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                android:paddingVertical="16dp"
+                android:background="@drawable/button_primary"
+                android:textColor="@color/white"
+                android:layout_marginBottom="14dp"
+                android:onClick="OnClickLogin"/>
+
+            <!-- Botão de Cadastro -->
+            <Button
+                android:id="@+id/signup_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/signup"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                android:paddingVertical="16dp"
+                android:background="@drawable/button_secondary"
+                android:textColor="@color/primary"
+                android:onClick="OnClickRegister"/>
+
+        </LinearLayout>
+
+        <!-- Versão do app -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_version"
+            android:textSize="12sp"
+            android:textColor="@color/white"
+            android:layout_marginTop="40dp" />
+
+    </LinearLayout>
+</RelativeLayout>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Cores primárias -->
+    <color name="primary">#6200EE</color>
+    <color name="primary_dark">#3700B3</color>
+    <color name="primary_light">#BB86FC</color>
+
+    <!-- Cores secundárias -->
+    <color name="secondary">#03DAC5</color>
+    <color name="secondary_dark">#018786</color>
+
+    <!-- Cores de texto -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="text_white">#FFFFFF</color>
+
+    <!-- Cores de fundo -->
+    <color name="background">#F5F5F5</color>
+    <color name="surface">#FFFFFF</color>
+
+    <!-- Cores de erro e status -->
+    <color name="error">#B00020</color>
+    <color name="success">#00C853</color>
+    <color name="warning">#FFAB00</color>
+
+    <!-- Cores neutras -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="gray_50">#FAFAFA</color>
+    <color name="gray_100">#F5F5F5</color>
+    <color name="gray_200">#EEEEEE</color>
+    <color name="gray_300">#E0E0E0</color>
+    <color name="gray_400">#BDBDBD</color>
+    <color name="gray_500">#9E9E9E</color>
+    <color name="gray_600">#757575</color>
+    <color name="gray_700">#616161</color>
+    <color name="gray_800">#424242</color>
+    <color name="gray_900">#212121</color>
+
+    <!-- Cores de overlay -->
+    <color name="overlay_dark">#66000000</color>
+    <color name="overlay_light">#33FFFFFF</color>
+
+    <!-- Cores de botões -->
+    <color name="button_primary">#6200EE</color>
+    <color name="button_primary_pressed">#3700B3</color>
+    <color name="button_secondary">#FFFFFF</color>
+    <color name="button_secondary_border">#6200EE</color>
+</resources>
