@@ -17,4 +17,9 @@ class LoginActivity : AppCompatActivity() {
         val intent = Intent(this, MapActivity::class.java)
         startActivity(intent)
     }
+
+    fun OnClickCadastrar(view: View) {
+        val intent = Intent(this, RegisterActivity::class.java)
+        startActivity(intent)
+    }
 }

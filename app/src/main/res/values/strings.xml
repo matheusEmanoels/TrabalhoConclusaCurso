@@ -22,6 +22,7 @@
     <string name="peso_label">Peso:</string>
     <string name="altura_label">Altura:</string>
     <string name="distancia_label">Meta de distancia a ser percorrida (Km):</string>
+    <string name="idade_label">Idade:</string>
 
 
 

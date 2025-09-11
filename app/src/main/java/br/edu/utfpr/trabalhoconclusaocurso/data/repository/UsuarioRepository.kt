@@ -1,6 +1,7 @@
 package br.edu.utfpr.trabalhoconclusaocurso.data.repository
 
 import android.database.sqlite.SQLiteDatabase
+import android.util.Log
 import br.edu.utfpr.trabalhoconclusaocurso.data.dao.UsuarioDao
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Usuario
 import com.google.firebase.firestore.FirebaseFirestore
@@ -13,8 +14,13 @@ class UsuarioRepository(private val db: SQLiteDatabase) {
 
     // Salva no SQLite e Firebase
     suspend fun salvar(usuario: Usuario) {
-        usuarioDao.inserir(usuario)
-        firebase.document(usuario.id).set(usuario).await()
+        try {
+            usuarioDao.inserir(usuario)
+            firebase.document(usuario.id).set(usuario).await()
+            Log.d("FIREBASE", "Usuário salvo com sucesso no Firestore: ${usuario.id}")
+        } catch (e: Exception) {
+            Log.e("FIREBASE", "Erro ao salvar no Firestore", e)
+        }
     }
 
     // Busca no SQLite

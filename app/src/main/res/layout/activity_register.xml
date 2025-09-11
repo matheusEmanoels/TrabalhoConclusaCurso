@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/login"
-    tools:context=".activities.LoginActivity">
+    tools:context=".activities.RegisterActivity">
 
     <!-- Imagem de fundo que se adapta à tela -->
     <ImageView
@@ -141,6 +141,23 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/idade_label"
+                android:textSize="16sp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp" />
+
+            <EditText
+                android:layout_width="300dp"
+                android:layout_height="match_parent"
+                android:background="@android:drawable/editbox_background"
+                android:id="@+id/etIdade"
+                android:inputType="number"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/distancia_label"
                 android:textSize="16sp"
                 android:textColor="@color/white"
@@ -152,9 +169,8 @@
                 android:layout_height="match_parent"
                 android:background="@android:drawable/editbox_background"
                 android:id="@+id/etDistancia"
-                android:inputType="textPassword"
+                android:inputType="numberDecimal"
                 android:layout_marginBottom="10dp" />
-
 
             <!-- Botão de Cadastro -->
             <Button
@@ -166,7 +182,8 @@
                 android:textSize="18sp"
                 android:paddingVertical="16dp"
                 android:background="@drawable/button_secondary"
-                android:textColor="@color/primary" />
+                android:textColor="@color/primary"
+                android:onClick="OnClickCriarConta"/>
 
         </LinearLayout>
 
