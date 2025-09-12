@@ -13,6 +13,7 @@ class DBHelper(context: Context) :
             CREATE TABLE $TABLE_USUARIO (
                 $COL_USUARIO_ID TEXT PRIMARY KEY,
                 $COL_USUARIO_NOME TEXT NOT NULL,
+                $COL_USUARIO_USERNAME TEXT NOT NULL UNIQUE,
                 $COL_USUARIO_CPF TEXT NOT NULL,
                 $COL_USUARIO_IDADE INTEGER NOT NULL,
                 $COL_USUARIO_ALTURA REAL NOT NULL,
@@ -61,12 +62,13 @@ class DBHelper(context: Context) :
 
     companion object {
         const val DATABASE_NAME = "app_corrida.db"
-        const val DATABASE_VERSION = 1
+        const val DATABASE_VERSION = 2
 
         // Tabela Usuario
         const val TABLE_USUARIO = "Usuario"
         const val COL_USUARIO_ID = "id"
         const val COL_USUARIO_NOME = "nome"
+        const val COL_USUARIO_USERNAME = "nome_usuario"
         const val COL_USUARIO_CPF = "cpf"
         const val COL_USUARIO_IDADE = "idade"
         const val COL_USUARIO_ALTURA = "altura"

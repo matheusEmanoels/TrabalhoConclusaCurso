@@ -1,5 +1,6 @@
 package br.edu.utfpr.trabalhoconclusaocurso.activities
 
+import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.view.View
@@ -13,6 +14,7 @@ import br.edu.utfpr.trabalhoconclusaocurso.services.DBHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.security.MessageDigest
 import java.util.UUID
 
 class RegisterActivity : AppCompatActivity() {
@@ -46,14 +48,15 @@ class RegisterActivity : AppCompatActivity() {
 
     fun OnClickCriarConta(view: View) {
         val usuario = Usuario(
-            id = UUID.randomUUID().toString(), // gera ID único
+            id = UUID.randomUUID().toString(),
             nome = etNome.text.toString(),
+            username = etNomeUsuario.text.toString(),
             cpf = etCpf.text.toString(),
             idade = etIdade.text.toString().toIntOrNull() ?: 0,
             altura = etAltura.text.toString().toDoubleOrNull() ?: 0.0,
             peso = etPeso.text.toString().toDoubleOrNull() ?: 0.0,
             distanciaPreferida = etDistancia.text.toString().toDoubleOrNull() ?: 0.0,
-            usuarioSenha = etSenha.text.toString()
+            usuarioSenha = hashSenha(etSenha.text.toString())
         )
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -68,5 +71,14 @@ class RegisterActivity : AppCompatActivity() {
                 }
             }
         }
+
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+    }
+
+    fun hashSenha(senha: String): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        val hashBytes = digest.digest(senha.toByteArray(Charsets.UTF_8))
+        return hashBytes.joinToString("") { "%02x".format(it) }
     }
 }

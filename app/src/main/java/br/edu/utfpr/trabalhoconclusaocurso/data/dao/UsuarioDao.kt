@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Usuario
+import br.edu.utfpr.trabalhoconclusaocurso.services.DBHelper
 
 class UsuarioDao(private val db: SQLiteDatabase) {
 
@@ -11,6 +12,7 @@ class UsuarioDao(private val db: SQLiteDatabase) {
         val values = ContentValues().apply {
             put("id", usuario.id)
             put("nome", usuario.nome)
+            put("nome_usuario", usuario.username)
             put("cpf", usuario.cpf)
             put("idade", usuario.idade)
             put("altura", usuario.altura)
@@ -21,45 +23,84 @@ class UsuarioDao(private val db: SQLiteDatabase) {
         return db.insert("Usuario", null, values)
     }
 
-    fun listarTodos(): List<Usuario> {
-        val lista = mutableListOf<Usuario>()
-        val cursor: Cursor = db.query("Usuario", null, null, null, null, null, null)
-
-        if (cursor.moveToFirst()) {
-            do {
-                lista.add(
-                    Usuario(
-                        id = cursor.getString(cursor.getColumnIndexOrThrow("id")),
-                        nome = cursor.getString(cursor.getColumnIndexOrThrow("nome")),
-                        cpf = cursor.getString(cursor.getColumnIndexOrThrow("cpf")),
-                        idade = cursor.getInt(cursor.getColumnIndexOrThrow("idade")),
-                        altura = cursor.getDouble(cursor.getColumnIndexOrThrow("altura")),
-                        peso = cursor.getDouble(cursor.getColumnIndexOrThrow("peso")),
-                        distanciaPreferida = cursor.getDouble(cursor.getColumnIndexOrThrow("distancia_preferida")),
-                        usuarioSenha = cursor.getString(cursor.getColumnIndexOrThrow("usuario_senha"))
-                    )
-                )
-            } while (cursor.moveToNext())
+    fun atualizar(usuario: Usuario): Int {
+        val values = ContentValues().apply {
+            put(DBHelper.COL_USUARIO_NOME, usuario.nome)
+            put(DBHelper.COL_USUARIO_USERNAME, usuario.username)
+            put(DBHelper.COL_USUARIO_SENHA, usuario.usuarioSenha)
+            put(DBHelper.COL_USUARIO_IDADE, usuario.idade)
+            put(DBHelper.COL_USUARIO_ALTURA, usuario.altura)
+            put(DBHelper.COL_USUARIO_PESO, usuario.peso)
+            put(DBHelper.COL_ATIVIDADE_DISTANCIA, usuario.distanciaPreferida)
         }
-        cursor.close()
-        return lista
+        return db.update(
+            DBHelper.TABLE_USUARIO,
+            values,
+            "${DBHelper.COL_USUARIO_ID} = ?",
+            arrayOf(usuario.id)
+        )
     }
 
+    // Busca usuário por ID
     fun buscarPorId(id: String): Usuario? {
         val cursor = db.query(
-            "Usuario", null, "id=?", arrayOf(id), null, null, null
+            DBHelper.TABLE_USUARIO,
+            null,
+            "${DBHelper.COL_USUARIO_ID} = ?",
+            arrayOf(id),
+            null,
+            null,
+            null
         )
-        return if (cursor.moveToFirst()) {
-            Usuario(
-                id = cursor.getString(cursor.getColumnIndexOrThrow("id")),
-                nome = cursor.getString(cursor.getColumnIndexOrThrow("nome")),
-                cpf = cursor.getString(cursor.getColumnIndexOrThrow("cpf")),
-                idade = cursor.getInt(cursor.getColumnIndexOrThrow("idade")),
-                altura = cursor.getDouble(cursor.getColumnIndexOrThrow("altura")),
-                peso = cursor.getDouble(cursor.getColumnIndexOrThrow("peso")),
-                distanciaPreferida = cursor.getDouble(cursor.getColumnIndexOrThrow("distancia_preferida")),
-                usuarioSenha = cursor.getString(cursor.getColumnIndexOrThrow("usuario_senha"))
-            )
-        } else null
+        return cursor.use { if (it.moveToFirst()) toUsuario(it) else null }
+    }
+
+    // Busca usuário pelo username
+    fun buscarPorUsername(username: String): Usuario? {
+        val cursor = db.query(
+            DBHelper.TABLE_USUARIO,
+            null,
+            "${DBHelper.COL_USUARIO_USERNAME}= ?",
+            arrayOf(username),
+            null,
+            null,
+            null
+        )
+        return cursor.use { if (it.moveToFirst()) toUsuario(it) else null }
+    }
+
+    // Lista todos os usuários
+    fun listarTodos(): List<Usuario> {
+        val cursor = db.query(
+            DBHelper.TABLE_USUARIO,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+        val usuarios = mutableListOf<Usuario>()
+        cursor.use {
+            while (it.moveToNext()) {
+                usuarios.add(toUsuario(it))
+            }
+        }
+        return usuarios
+    }
+
+    // Converte cursor para objeto Usuario
+    private fun toUsuario(cursor: Cursor): Usuario {
+        return Usuario(
+            id = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COL_USUARIO_ID)),
+            nome = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COL_USUARIO_NOME)),
+            cpf = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COL_USUARIO_CPF)),
+            username = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COL_USUARIO_USERNAME)),
+            usuarioSenha = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.COL_USUARIO_SENHA)),
+            idade = cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.COL_USUARIO_IDADE)),
+            altura = cursor.getDouble(cursor.getColumnIndexOrThrow(DBHelper.COL_USUARIO_ALTURA)),
+            peso = cursor.getDouble(cursor.getColumnIndexOrThrow(DBHelper.COL_USUARIO_PESO)),
+            distanciaPreferida = cursor.getDouble(cursor.getColumnIndexOrThrow(DBHelper.COL_USUARIO_DISTANCIA_PREF))
+        )
     }
 }

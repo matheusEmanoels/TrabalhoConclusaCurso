@@ -16,7 +16,7 @@ class UsuarioRepository(private val db: SQLiteDatabase) {
     suspend fun salvar(usuario: Usuario) {
         try {
             usuarioDao.inserir(usuario)
-            firebase.document(usuario.id).set(usuario).await()
+            firebase.document(usuario.id!!).set(usuario).await()
             Log.d("FIREBASE", "Usuário salvo com sucesso no Firestore: ${usuario.id}")
         } catch (e: Exception) {
             Log.e("FIREBASE", "Erro ao salvar no Firestore", e)
@@ -28,10 +28,29 @@ class UsuarioRepository(private val db: SQLiteDatabase) {
 
     // Sincroniza do Firebase para SQLite
     suspend fun sincronizar() {
-        val snapshot = firebase.get().await()
-        snapshot.documents.forEach { doc ->
-            val usuario = doc.toObject(Usuario::class.java)
-            usuario?.let { usuarioDao.inserir(it) }
+        try {
+            // Firebase → SQLite
+            val snapshot = firebase.get().await()
+            snapshot.documents.forEach { doc ->
+                val usuario = doc.toObject(Usuario::class.java)
+                usuario?.let {
+                    val existente = usuarioDao.buscarPorId(it.id!!)
+                    if (existente == null) {
+                        usuarioDao.inserir(it)
+                    } else {
+                        usuarioDao.atualizar(it)
+                    }
+                }
+            }
+
+            // SQLite → Firebase
+            val usuariosLocais = usuarioDao.listarTodos()
+            usuariosLocais.forEach { usuario ->
+                firebase.document(usuario.id!!).set(usuario).await()
+            }
+
+        } catch (e: Exception) {
+            Log.e("SYNC", "Erro ao sincronizar", e)
         }
     }
 }
