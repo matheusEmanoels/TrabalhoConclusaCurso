@@ -9,24 +9,25 @@ class CoordenadaDao(private val db: SQLiteDatabase) {
 
     fun inserir(coord: Coordenada): Long {
         val values = ContentValues().apply {
+            put("id", coord.id)
             put("id_atividade", coord.idAtividade)
             put("latitude", coord.latitude)
             put("longitude", coord.longitude)
         }
-        return db.insert("Coordenadas", null, values)
+        return db.insert("Coordenada", null, values)
     }
 
     fun listarPorAtividade(idAtividade: String): List<Coordenada> {
         val lista = mutableListOf<Coordenada>()
         val cursor: Cursor = db.query(
-            "Coordenadas", null, "id_atividade=?", arrayOf(idAtividade), null, null, null
+            "Coordenada", null, "id_atividade=?", arrayOf(idAtividade), null, null, null
         )
 
         if (cursor.moveToFirst()) {
             do {
                 lista.add(
                     Coordenada(
-                        id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                        id = cursor.getString(cursor.getColumnIndexOrThrow("id")),
                         idAtividade = cursor.getString(cursor.getColumnIndexOrThrow("id_atividade")),
                         latitude = cursor.getDouble(cursor.getColumnIndexOrThrow("latitude")),
                         longitude = cursor.getDouble(cursor.getColumnIndexOrThrow("longitude"))

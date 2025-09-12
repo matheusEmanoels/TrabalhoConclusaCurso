@@ -12,17 +12,22 @@ import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import br.edu.utfpr.trabalhoconclusaocurso.R
-import br.edu.utfpr.trabalhoconclusaocurso.data.dao.AtividadeDao
 import br.edu.utfpr.trabalhoconclusaocurso.data.dao.CoordenadaDao
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Atividade
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Coordenada
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Usuario
+import br.edu.utfpr.trabalhoconclusaocurso.data.repository.AtividadeRepository
+import br.edu.utfpr.trabalhoconclusaocurso.data.repository.CoordenadaRepository
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 class LocationService : Service(){
@@ -33,9 +38,11 @@ class LocationService : Service(){
     private var startTime: Long = 0
     private var usuarioLocal: Usuario? = null
     private lateinit var dbHelper: DBHelper
-    private lateinit var atividadeDao: AtividadeDao
-    private lateinit var coordenadaDao: CoordenadaDao
+    private lateinit var atividadeRepository: AtividadeRepository
+    private lateinit var coordenadaRepository: CoordenadaRepository
     private lateinit var atividadeId: String
+    private val serviceJob = SupervisorJob()
+    private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
 
     override fun onCreate() {
         super.onCreate()
@@ -43,8 +50,10 @@ class LocationService : Service(){
         startTime = System.currentTimeMillis()
 
         dbHelper = DBHelper(this)
-        atividadeDao = AtividadeDao(dbHelper.writableDatabase)
-        coordenadaDao = CoordenadaDao(dbHelper.writableDatabase)
+        atividadeRepository = AtividadeRepository(dbHelper.writableDatabase)
+        coordenadaRepository = CoordenadaRepository(dbHelper.writableDatabase)
+
+        atividadeId = UUID.randomUUID().toString()
 
 
         startLocationUpdates()
@@ -53,7 +62,6 @@ class LocationService : Service(){
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground(1, createNotification())
         usuarioLocal = intent?.getSerializableExtra("usuario") as? Usuario
-        atividadeId = UUID.randomUUID().toString()
         val novaAtividade = Atividade(
             id = atividadeId,
             idUsuario = usuarioLocal?.id!!,
@@ -64,7 +72,10 @@ class LocationService : Service(){
             velocidadeMedia = 0.0,
             caloriasPerdidas = 0.0
         )
-        atividadeDao.inserir(novaAtividade)
+        serviceScope.launch{
+            atividadeRepository.salvar(novaAtividade)
+        }
+
         return START_STICKY
     }
 
@@ -101,12 +112,14 @@ class LocationService : Service(){
                 val calorias = (totalDistance / 1000.0) * usuarioLocal?.peso!!
 
                 val coordenada = Coordenada(
+                    id = UUID.randomUUID().toString(),
                     idAtividade = atividadeId,
                     latitude = location.latitude,
                     longitude = location.longitude
                 )
-                coordenadaDao.inserir(coordenada)
-
+                serviceScope.launch {
+                    coordenadaRepository.salvar(coordenada, usuarioLocal?.id!!)
+                }
                 sendLocationToActivity(location, totalDistance, velocidadeMedia, calorias)
             }
         }
@@ -123,7 +136,7 @@ class LocationService : Service(){
 
         val atividadeFinal = Atividade(
             id = atividadeId,
-            idUsuario = "USUARIO_TESTE",
+            idUsuario = usuarioLocal?.id!!,
             nome = "Corrida",
             dataHora = startTime.toString(),
             duracao = duracao,
@@ -131,13 +144,18 @@ class LocationService : Service(){
             velocidadeMedia = velocidadeMedia,
             caloriasPerdidas = calorias
         )
-        atividadeDao.atualizar(atividadeFinal)
+        serviceScope.launch {
+            atividadeRepository.salvar(atividadeFinal)
+        }
+
 
         Log.d("GPS_SERVICE", "== RESUMO DA ATIVIDADE ==")
         Log.d("GPS_SERVICE", "Duração: ${duracao / 1000} s")
         Log.d("GPS_SERVICE", "Distância: ${"%.2f".format(totalDistance / 1000)} km")
         Log.d("GPS_SERVICE", "Velocidade Média: ${"%.2f".format(velocidadeMedia)} km/h")
         Log.d("GPS_SERVICE", "Calorias: ${"%.2f".format(calorias)} kcal")
+
+        serviceJob.cancel()
     }
 
     private fun createNotification(): Notification {

@@ -43,7 +43,7 @@ class DBHelper(context: Context) :
         // Criação da tabela Coordenada
         val createCoordenada = """
             CREATE TABLE $TABLE_COORDENADA (
-                $COL_COORDENADA_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                $COL_COORDENADA_ID TEXT PRIMARY KEY,
                 $COL_COORDENADA_ID_ATIVIDADE TEXT NOT NULL,
                 $COL_COORDENADA_LAT REAL NOT NULL,
                 $COL_COORDENADA_LON REAL NOT NULL,
@@ -62,7 +62,7 @@ class DBHelper(context: Context) :
 
     companion object {
         const val DATABASE_NAME = "app_corrida.db"
-        const val DATABASE_VERSION = 2
+        const val DATABASE_VERSION = 3
 
         // Tabela Usuario
         const val TABLE_USUARIO = "Usuario"

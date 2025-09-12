@@ -18,7 +18,8 @@ class CoordenadaRepository(private val db: SQLiteDatabase) {
             .collection("atividades")
             .document(coord.idAtividade)
             .collection("coordenadas")
-            .add(coord)
+            .document(coord.id)
+            .set(coord)
             .await()
     }
 
