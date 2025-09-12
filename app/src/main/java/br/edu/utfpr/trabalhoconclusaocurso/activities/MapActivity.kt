@@ -19,6 +19,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.util.Log
+import br.edu.utfpr.trabalhoconclusaocurso.data.model.Usuario
 import br.edu.utfpr.trabalhoconclusaocurso.services.LocationService
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -28,6 +30,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
+    private var usuario: Usuario? = null
     private lateinit var btnIniciarParar: Button
     private var isTracking = false
     private val polylineOptions = PolylineOptions().width(10f).color(android.graphics.Color.BLUE)
@@ -55,6 +58,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        usuario = intent?.getSerializableExtra("usuario") as? Usuario
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -79,6 +84,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             btnIniciarParar.text = "Parar"
             btnIniciarParar.setBackgroundColor(getColor(R.color.error))
             val serviceIntent = Intent(this, LocationService::class.java)
+            serviceIntent.putExtra("usuario", usuario)
             startService(serviceIntent)
         }
         isTracking = !isTracking

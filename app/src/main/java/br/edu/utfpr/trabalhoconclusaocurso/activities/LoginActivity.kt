@@ -56,6 +56,7 @@ class LoginActivity : AppCompatActivity() {
             if (usuarioLocal.usuarioSenha == senhaHash) {
                 Toast.makeText(this, "Login local bem-sucedido!", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, MapActivity::class.java)
+                intent.putExtra("usuario", usuarioLocal)
                 startActivity(intent)
                 return
             } else {

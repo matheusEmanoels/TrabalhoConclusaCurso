@@ -1,5 +1,7 @@
 package br.edu.utfpr.trabalhoconclusaocurso.data.model
 
+import java.io.Serializable
+
 data class Usuario(
     var id: String? = null,
     var nome: String? = null,
@@ -10,4 +12,4 @@ data class Usuario(
     var peso: Double? = null,
     var distanciaPreferida: Double? = null,
     var usuarioSenha: String? = null
-)
+) : Serializable

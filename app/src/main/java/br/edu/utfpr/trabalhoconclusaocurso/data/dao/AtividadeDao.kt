@@ -21,6 +21,16 @@ class AtividadeDao(private val db: SQLiteDatabase) {
         return db.insert("Atividade", null, values)
     }
 
+    fun atualizar(atividade: Atividade) {
+        val values = ContentValues().apply {
+            put("duracao", atividade.duracao)
+            put("distancia", atividade.distancia)
+            put("velocidade_media", atividade.velocidadeMedia)
+            put("calorias_perdidas", atividade.caloriasPerdidas)
+        }
+        db.update("Atividade", values, "id = ?", arrayOf(atividade.id))
+    }
+
     fun listarPorUsuario(idUsuario: String): List<Atividade> {
         val lista = mutableListOf<Atividade>()
         val cursor: Cursor = db.query(
@@ -35,7 +45,7 @@ class AtividadeDao(private val db: SQLiteDatabase) {
                         idUsuario = cursor.getString(cursor.getColumnIndexOrThrow("id_usuario")),
                         nome = cursor.getString(cursor.getColumnIndexOrThrow("nome")),
                         dataHora = cursor.getString(cursor.getColumnIndexOrThrow("data_hora")),
-                        duracao = cursor.getInt(cursor.getColumnIndexOrThrow("duracao")),
+                        duracao = cursor.getLong(cursor.getColumnIndexOrThrow("duracao")),
                         distancia = cursor.getDouble(cursor.getColumnIndexOrThrow("distancia")),
                         velocidadeMedia = cursor.getDouble(cursor.getColumnIndexOrThrow("velocidade_media")),
                         caloriasPerdidas = cursor.getDouble(cursor.getColumnIndexOrThrow("calorias_perdidas"))

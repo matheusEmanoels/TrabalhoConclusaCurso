@@ -40,6 +40,12 @@
         <activity android:name=".activities.LoginActivity" />
         <activity android:name=".activities.MapActivity" />
 
+        <service
+            android:name=".services.LocationService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="location" />
+
 
     </application>
 
