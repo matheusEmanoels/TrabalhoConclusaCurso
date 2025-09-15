@@ -103,15 +103,12 @@ class LocationService : Service(){
                 }
                 lastLocation = location
 
-                // duração
                 val duracao = System.currentTimeMillis() - startTime
                 val horas = duracao / 1000.0 / 3600.0
 
-                // velocidade média (km/h)
                 val velocidadeMedia = if (horas > 0) (totalDistance / 1000.0) / horas else 0.0
 
-                // gasto calórico (fórmula simples)
-                val calorias = (totalDistance / 1000.0) * usuarioLocal?.peso!!
+                val calorias = calcGastoCalorias(velocidadeMedia, usuarioLocal?.peso!!, horas)
 
                 val coordenada = Coordenada(
                     id = UUID.randomUUID().toString(),
@@ -154,7 +151,7 @@ class LocationService : Service(){
         val duracao = System.currentTimeMillis() - startTime
         val horas = duracao / 1000.0 / 3600.0
         val velocidadeMedia = if (horas > 0) (totalDistance / 1000.0) / horas else 0.0
-        val calorias = (totalDistance / 1000.0) * usuarioLocal?.peso!!
+        val calorias = calcGastoCalorias(velocidadeMedia, usuarioLocal?.peso!!, horas)
 
         val atividadeFinal = Atividade(
             id = atividadeId,
@@ -218,5 +215,25 @@ class LocationService : Service(){
         val intent = Intent(this, TTSService::class.java)
         intent.putExtra("texto_para_falar", texto)
         startService(intent)
+    }
+
+    private fun calcGastoCalorias(velocidade: Double, peso: Double, duracao: Double): Double {
+        val MET = calcMET(velocidade)
+
+        val caloriasTotais = MET * peso * duracao;
+
+        return caloriasTotais;
+    }
+
+    private fun calcMET(velocidade: Double): Double {
+        val MET = when {
+            velocidade >= 16.0 -> 16.0
+            velocidade >= 13.0 -> 12.8
+            velocidade >= 11.3 -> 11.5
+            velocidade >= 9.5 -> 9.8
+            velocidade >= 8.0 -> 8.0
+            else -> 5.0
+        }
+        return MET
     }
 }
