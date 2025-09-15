@@ -123,18 +123,14 @@ class LocationService : Service(){
                 if (totalDistance >= 1000) {
                     val km = (totalDistance / 1000).toInt()
 
-                    val elapsedTime = (System.currentTimeMillis() - startTime) / 1000.0 // segundos
-                    val hours = elapsedTime / 3600.0
-                    val avgSpeed = if (hours > 0) totalDistance / 1000.0 / hours else 0.0 // km/h
-
-                    val minutesPerKm = if (km > 0) (elapsedTime / 60.0) / km else 0.0
+                    val minutesPerKm = if (km > 0) (horas / 60.0) / km else 0.0
                     val paceMin = minutesPerKm.toInt()
                     val paceSec = ((minutesPerKm - paceMin) * 60).toInt()
 
                     val paceStr = String.format("%d minutos e %02d segundos por quilômetro", paceMin, paceSec)
 
                     falar("Você completou $km quilômetro${if (km > 1) "s" else ""}. " +
-                            "Sua velocidade média é ${"%.1f".format(avgSpeed)} quilômetros por hora. " +
+                            "Sua velocidade média é ${"%.1f".format(velocidadeMedia)} quilômetros por hora. " +
                             "Seu ritmo médio é de $paceStr.")
 
                     totalDistance %= 1000
@@ -153,6 +149,11 @@ class LocationService : Service(){
         val velocidadeMedia = if (horas > 0) (totalDistance / 1000.0) / horas else 0.0
         val calorias = calcGastoCalorias(velocidadeMedia, usuarioLocal?.peso!!, horas)
 
+        val pace = if (velocidadeMedia > 0) 60.0 / velocidadeMedia else 0.0
+
+        val paceMin = pace.toInt()
+        val paceSec = ((pace - paceMin) * 60).toInt()
+
         val atividadeFinal = Atividade(
             id = atividadeId,
             idUsuario = usuarioLocal?.id!!,
@@ -160,7 +161,7 @@ class LocationService : Service(){
             dataHora = startTime.toString(),
             duracao = duracao,
             distancia = totalDistance,
-            velocidadeMedia = velocidadeMedia,
+            velocidadeMedia = pace,
             caloriasPerdidas = calorias
         )
         serviceScope.launch {
@@ -168,11 +169,7 @@ class LocationService : Service(){
         }
 
 
-        Log.d("GPS_SERVICE", "== RESUMO DA ATIVIDADE ==")
-        Log.d("GPS_SERVICE", "Duração: ${duracao / 1000} s")
-        Log.d("GPS_SERVICE", "Distância: ${"%.2f".format(totalDistance / 1000)} km")
-        Log.d("GPS_SERVICE", "Velocidade Média: ${"%.2f".format(velocidadeMedia)} km/h")
-        Log.d("GPS_SERVICE", "Calorias: ${"%.2f".format(calorias)} kcal")
+        sendResToActivity(paceMin, paceSec, totalDistance, velocidadeMedia, calorias, duracao)
 
         serviceJob.cancel()
     }
@@ -208,6 +205,17 @@ class LocationService : Service(){
         intent.putExtra("distancia", totalDistance)
         intent.putExtra("velocidade", velocidadeMedia)
         intent.putExtra("calorias", calorias)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+    }
+
+    private fun sendResToActivity(paceMin: Int,paceSec: Int, totalDistance: Double, velocidadeMedia: Double, calorias: Double, duracao: Long) {
+        val intent = Intent("FINAL_UPDATE")
+        intent.putExtra("distancia", totalDistance)
+        intent.putExtra("velocidade", velocidadeMedia)
+        intent.putExtra("calorias", calorias)
+        intent.putExtra("paceMin", paceMin)
+        intent.putExtra("paceSec", paceSec)
+        intent.putExtra("duracao", duracao)
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
 
