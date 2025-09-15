@@ -22,6 +22,17 @@ class AtividadeRepository(private val db: SQLiteDatabase) {
             .await()
     }
 
+    suspend fun atualizar(atividade: Atividade) {
+        atividadeDao.atualizar(atividade)
+
+        // Atividade vai como subcoleção de Usuario
+        firebase.document(atividade.idUsuario)
+            .collection("atividades")
+            .document(atividade.id)
+            .set(atividade)
+            .await()
+    }
+
     fun listarPorUsuarioLocal(idUsuario: String): List<Atividade> =
         atividadeDao.listarPorUsuario(idUsuario)
 

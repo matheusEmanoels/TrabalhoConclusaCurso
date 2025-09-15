@@ -11,6 +11,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import br.edu.utfpr.trabalhoconclusaocurso.R
 import br.edu.utfpr.trabalhoconclusaocurso.data.dao.CoordenadaDao
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Atividade
@@ -43,6 +44,7 @@ class LocationService : Service(){
     private lateinit var atividadeId: String
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
+
 
     override fun onCreate() {
         super.onCreate()
@@ -120,6 +122,26 @@ class LocationService : Service(){
                 serviceScope.launch {
                     coordenadaRepository.salvar(coordenada, usuarioLocal?.id!!)
                 }
+
+                if (totalDistance >= 1000) {
+                    val km = (totalDistance / 1000).toInt()
+
+                    val elapsedTime = (System.currentTimeMillis() - startTime) / 1000.0 // segundos
+                    val hours = elapsedTime / 3600.0
+                    val avgSpeed = if (hours > 0) totalDistance / 1000.0 / hours else 0.0 // km/h
+
+                    val minutesPerKm = if (km > 0) (elapsedTime / 60.0) / km else 0.0
+                    val paceMin = minutesPerKm.toInt()
+                    val paceSec = ((minutesPerKm - paceMin) * 60).toInt()
+
+                    val paceStr = String.format("%d minutos e %02d segundos por quilômetro", paceMin, paceSec)
+
+                    falar("Você completou $km quilômetro${if (km > 1) "s" else ""}. " +
+                            "Sua velocidade média é ${"%.1f".format(avgSpeed)} quilômetros por hora. " +
+                            "Seu ritmo médio é de $paceStr.")
+
+                    totalDistance %= 1000
+                }
                 sendLocationToActivity(location, totalDistance, velocidadeMedia, calorias)
             }
         }
@@ -145,7 +167,7 @@ class LocationService : Service(){
             caloriasPerdidas = calorias
         )
         serviceScope.launch {
-            atividadeRepository.salvar(atividadeFinal)
+            atividadeRepository.atualizar(atividadeFinal)
         }
 
 
@@ -189,6 +211,12 @@ class LocationService : Service(){
         intent.putExtra("distancia", totalDistance)
         intent.putExtra("velocidade", velocidadeMedia)
         intent.putExtra("calorias", calorias)
-        sendBroadcast(intent)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+    }
+
+    private fun falar(texto: String) {
+        val intent = Intent(this, TTSService::class.java)
+        intent.putExtra("texto_para_falar", texto)
+        startService(intent)
     }
 }

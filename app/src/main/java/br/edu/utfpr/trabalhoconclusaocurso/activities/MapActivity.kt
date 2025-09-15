@@ -19,7 +19,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.util.Log
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Usuario
 import br.edu.utfpr.trabalhoconclusaocurso.services.LocationService
 import com.google.android.gms.maps.model.LatLng
@@ -94,12 +96,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
         val filter = IntentFilter("LOCATION_UPDATE")
-        registerReceiver(locationReceiver, filter, RECEIVER_NOT_EXPORTED)
+        LocalBroadcastManager.getInstance(this).registerReceiver(locationReceiver, filter)
     }
 
     override fun onPause() {
         super.onPause()
-        unregisterReceiver(locationReceiver)
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(locationReceiver)
     }
 
     private val locationReceiver = object : BroadcastReceiver() {
