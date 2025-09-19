@@ -23,6 +23,7 @@ class UsuarioDao(private val db: SQLiteDatabase) {
         return db.insert("Usuario", null, values)
     }
 
+
     fun atualizar(usuario: Usuario): Int {
         val values = ContentValues().apply {
             put(DBHelper.COL_USUARIO_NOME, usuario.nome)
@@ -31,7 +32,7 @@ class UsuarioDao(private val db: SQLiteDatabase) {
             put(DBHelper.COL_USUARIO_IDADE, usuario.idade)
             put(DBHelper.COL_USUARIO_ALTURA, usuario.altura)
             put(DBHelper.COL_USUARIO_PESO, usuario.peso)
-            put(DBHelper.COL_ATIVIDADE_DISTANCIA, usuario.distanciaPreferida)
+            put(DBHelper.COL_USUARIO_DISTANCIA_PREF, usuario.distanciaPreferida)
         }
         return db.update(
             DBHelper.TABLE_USUARIO,

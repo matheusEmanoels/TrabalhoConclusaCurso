@@ -108,7 +108,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         isTracking = !isTracking
     }
 
-    fun OnClickConfiguracoes(view: View) {}
+    fun OnClickConfiguracoes(view: View) {
+        val intent = Intent(this, SettingsActivity::class.java)
+        intent.putExtra("usuario", usuario)
+        startActivity(intent)
+    }
 
     override fun onResume() {
         super.onResume()

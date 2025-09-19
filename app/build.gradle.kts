@@ -54,8 +54,10 @@ dependencies {
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
+    implementation(libs.androidx.preference)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("com.google.firebase:firebase-firestore-ktx:25.0.0")
+    implementation ("androidx.preference:preference-ktx:1.2.1")
 }

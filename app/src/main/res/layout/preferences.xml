@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:showDividers="middle">
+
+        <!-- Frequência de atualização -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Frequência de Atualização (segundos)"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginBottom="8dp"/>
+
+        <SeekBar
+            android:id="@+id/seekBarFrequencia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="60"
+            android:progress="10"/>
+
+        <TextView
+            android:id="@+id/tvFrequenciaValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="10s"
+            android:gravity="center"/>
+
+        <!-- Distância desejada -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Distância Desejada (Quilometros)"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"/>
+
+        <SeekBar
+            android:id="@+id/seekBarDistancia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:progress="100"/>
+
+        <TextView
+            android:id="@+id/tvDistanciaValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="100km"
+            android:gravity="center"/>
+
+        <!-- Feedback por áudio -->
+        <CheckBox
+            android:id="@+id/checkFeedback"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ativar feedback por áudio"
+            android:layout_marginTop="16dp"/>
+
+        <Button
+            android:id="@+id/btnSaveConfig"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Salvar Configurações"
+            android:layout_marginTop="24dp"/>
+    </LinearLayout>
+</ScrollView>

@@ -3,6 +3,7 @@ package br.edu.utfpr.trabalhoconclusaocurso.data.repository
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import br.edu.utfpr.trabalhoconclusaocurso.data.dao.UsuarioDao
+import br.edu.utfpr.trabalhoconclusaocurso.data.model.Atividade
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Usuario
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -21,6 +22,14 @@ class UsuarioRepository(private val db: SQLiteDatabase) {
         } catch (e: Exception) {
             Log.e("FIREBASE", "Erro ao salvar no Firestore", e)
         }
+    }
+
+    suspend fun atualizar(usuario: Usuario) {
+        usuarioDao.atualizar(usuario)
+
+        firebase.document(usuario.id!!)
+            .set(usuario)
+            .await()
     }
 
     // Busca no SQLite
