@@ -9,11 +9,10 @@ import android.location.Location
 import android.os.Build
 import android.os.IBinder
 import android.os.Looper
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import br.edu.utfpr.trabalhoconclusaocurso.R
-import br.edu.utfpr.trabalhoconclusaocurso.data.dao.CoordenadaDao
+import br.edu.utfpr.trabalhoconclusaocurso.activities.SettingsActivity
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Atividade
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Coordenada
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Usuario
@@ -38,6 +37,9 @@ class LocationService : Service(){
     private var totalDistance = 0.0
     private var startTime: Long = 0
     private var usuarioLocal: Usuario? = null
+    private var distanciaAcumulada = 0.0
+    private var proximoAviso = 500
+    private var frequenciaCoordenadas = 5L
     private lateinit var dbHelper: DBHelper
     private lateinit var atividadeRepository: AtividadeRepository
     private lateinit var coordenadaRepository: CoordenadaRepository
@@ -57,6 +59,12 @@ class LocationService : Service(){
 
         atividadeId = UUID.randomUUID().toString()
 
+        val frequencia = SettingsActivity.Config.getFrequenciaAtualizacao(this)
+        frequenciaCoordenadas =  if (frequencia > 0 && frequencia < 60) {
+            (frequencia * 1000.0).toLong()
+        } else {
+            5000L
+        }
 
         startLocationUpdates()
     }
@@ -84,7 +92,7 @@ class LocationService : Service(){
     private fun startLocationUpdates() {
         val locationRequest = LocationRequest.Builder(
             Priority.PRIORITY_HIGH_ACCURACY,
-            2000L
+            frequenciaCoordenadas
         ).build()
 
         fusedLocationClient.requestLocationUpdates(
@@ -103,8 +111,8 @@ class LocationService : Service(){
                 }
                 lastLocation = location
 
-                val duracao = System.currentTimeMillis() - startTime
-                val horas = duracao / 1000.0 / 3600.0
+                val duracao = (System.currentTimeMillis() - startTime) / 1000.0
+                val horas = duracao / 3600.0
 
                 val velocidadeMedia = if (horas > 0) (totalDistance / 1000.0) / horas else 0.0
 
@@ -120,20 +128,8 @@ class LocationService : Service(){
                     coordenadaRepository.salvar(coordenada, usuarioLocal?.id!!)
                 }
 
-                if (totalDistance >= 1000) {
-                    val km = (totalDistance / 1000).toInt()
-
-                    val minutesPerKm = if (km > 0) (horas / 60.0) / km else 0.0
-                    val paceMin = minutesPerKm.toInt()
-                    val paceSec = ((minutesPerKm - paceMin) * 60).toInt()
-
-                    val paceStr = String.format("%d minutos e %02d segundos por quilômetro", paceMin, paceSec)
-
-                    falar("Você completou $km quilômetro${if (km > 1) "s" else ""}. " +
-                            "Sua velocidade média é ${"%.1f".format(velocidadeMedia)} quilômetros por hora. " +
-                            "Seu ritmo médio é de $paceStr.")
-
-                    totalDistance %= 1000
+                if(SettingsActivity.Config.isFeedbackAudioLigado(this@LocationService)) {
+                    atualizarProgresso(totalDistance, horas, velocidadeMedia)
                 }
                 sendLocationToActivity(location, totalDistance, velocidadeMedia, calorias)
             }
@@ -144,8 +140,8 @@ class LocationService : Service(){
         super.onDestroy()
         fusedLocationClient.removeLocationUpdates(locationCallback)
 
-        val duracao = System.currentTimeMillis() - startTime
-        val horas = duracao / 1000.0 / 3600.0
+        val duracao = (System.currentTimeMillis() - startTime) / 1000.0
+        val horas = duracao / 3.600
         val velocidadeMedia = if (horas > 0) (totalDistance / 1000.0) / horas else 0.0
         val calorias = calcGastoCalorias(velocidadeMedia, usuarioLocal?.peso!!, horas)
 
@@ -159,7 +155,7 @@ class LocationService : Service(){
             idUsuario = usuarioLocal?.id!!,
             nome = "Corrida",
             dataHora = startTime.toString(),
-            duracao = duracao,
+            duracao = duracao.toLong(),
             distancia = totalDistance,
             velocidadeMedia = pace,
             caloriasPerdidas = calorias
@@ -168,9 +164,10 @@ class LocationService : Service(){
             atividadeRepository.atualizar(atividadeFinal)
         }
 
+        sendResToActivity(paceMin, paceSec, (totalDistance/1000), velocidadeMedia, calorias, duracao)
 
-        sendResToActivity(paceMin, paceSec, totalDistance, velocidadeMedia, calorias, duracao)
-
+        distanciaAcumulada = 0.0
+        proximoAviso = 500
         serviceJob.cancel()
     }
 
@@ -208,7 +205,7 @@ class LocationService : Service(){
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
 
-    private fun sendResToActivity(paceMin: Int,paceSec: Int, totalDistance: Double, velocidadeMedia: Double, calorias: Double, duracao: Long) {
+    private fun sendResToActivity(paceMin: Int,paceSec: Int, totalDistance: Double, velocidadeMedia: Double, calorias: Double, duracao: Double) {
         val intent = Intent("FINAL_UPDATE")
         intent.putExtra("distancia", totalDistance)
         intent.putExtra("velocidade", velocidadeMedia)
@@ -228,7 +225,7 @@ class LocationService : Service(){
     private fun calcGastoCalorias(velocidade: Double, peso: Double, duracao: Double): Double {
         val MET = calcMET(velocidade)
 
-        val caloriasTotais = MET * peso * duracao;
+        val caloriasTotais = MET * peso * (duracao / 3.600);
 
         return caloriasTotais;
     }
@@ -243,5 +240,47 @@ class LocationService : Service(){
             else -> 5.0
         }
         return MET
+    }
+
+    fun atualizarProgresso(distanciaNova: Double, horas: Double, velocidadeMedia: Double) {
+        distanciaAcumulada = distanciaNova
+
+        val objetivoMetros = (usuarioLocal?.distanciaPreferida?.toFloat() ?: 1f) * 1000f
+
+        if (distanciaAcumulada >= proximoAviso) {
+            val km = distanciaAcumulada / 1000f
+
+            val minutesPerKm = if (km > 0) (horas / 60.0) / km else 0.0
+            val paceMin = minutesPerKm.toInt()
+            val paceSec = ((minutesPerKm - paceMin) * 60).toInt()
+            val paceStr =
+                String.format("%d minutos e %02d segundos por quilômetro", paceMin, paceSec)
+
+            val restanteMetros = (objetivoMetros - distanciaAcumulada).coerceAtLeast(0.0)
+            val restanteStr = if (restanteMetros >= 1000) {
+                String.format("%.2f quilômetros", restanteMetros / 1000f)
+            } else {
+                String.format("%.0f metros", restanteMetros)
+            }
+
+            val distanciaStr = if (distanciaAcumulada < 1000) {
+                String.format("%.0f metros", distanciaAcumulada)
+            } else {
+                String.format("%.2f quilômetros", km)
+            }
+
+            if (restanteMetros == 0.0) {
+                falar("Parabéns! Você atingiu seu objetivo de ${"%.2f".format(objetivoMetros / 1000f)} quilômetros!")
+            } else {
+                falar(
+                    "Você completou $distanciaStr. " +
+                            "Sua velocidade média é ${"%.1f".format(velocidadeMedia)} quilômetros por hora. " +
+                            "Seu ritmo médio é de $paceStr. " +
+                            "Faltam $restanteStr para o seu objetivo."
+                )
+            }
+
+            proximoAviso += 500
+        }
     }
 }

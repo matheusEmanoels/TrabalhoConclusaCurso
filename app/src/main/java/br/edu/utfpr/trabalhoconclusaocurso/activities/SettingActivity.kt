@@ -14,6 +14,7 @@ import br.edu.utfpr.trabalhoconclusaocurso.R
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Usuario
 import br.edu.utfpr.trabalhoconclusaocurso.data.repository.UsuarioRepository
 import br.edu.utfpr.trabalhoconclusaocurso.services.DBHelper
+import com.google.android.gms.location.LocationCallback
 import kotlinx.coroutines.launch
 
 
@@ -37,7 +38,6 @@ class SettingsActivity : AppCompatActivity() {
         usuarioRepository = UsuarioRepository(dbHelper.writableDatabase)
         usuario = (intent?.getSerializableExtra("usuario") as? Usuario)!!
 
-        // Carregar valores salvos
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         seekBarFrequencia.progress = prefs.getInt(KEY_FREQUENCIA_ATUALIZACAO, 10)
         tvFrequenciaValue.text = "${seekBarFrequencia.progress}s"
@@ -47,7 +47,6 @@ class SettingsActivity : AppCompatActivity() {
 
         checkFeedback.isChecked = prefs.getBoolean(KEY_FEEDBACK_AUDIO, true)
 
-        // Listeners
         seekBarFrequencia.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 tvFrequenciaValue.text = "${progress}s"
@@ -64,7 +63,6 @@ class SettingsActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
 
-        // Salvar configs
         btnSave.setOnClickListener {
             prefs.edit()
                 .putInt(KEY_FREQUENCIA_ATUALIZACAO, seekBarFrequencia.progress)

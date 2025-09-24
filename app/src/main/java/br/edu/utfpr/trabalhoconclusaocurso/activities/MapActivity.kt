@@ -19,6 +19,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.util.Log
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -164,9 +165,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 tvPace.text = "Pace Médio: %d'%02d\" /km".format(intent.getIntExtra("paceMin", 0), intent.getIntExtra("paceSec", 0))
                 tvCalorias.text = "Calorias: %.0f kcal".format(intent.getDoubleExtra("calorias", 0.0))
 
-                val horas = intent.getIntExtra("duracao", 0) / 3600
-                val minutos = (intent.getIntExtra("duracao", 0) % 3600) / 60
-                val segundos = intent.getIntExtra("duracao", 0) % 60
+                val duracao = intent.getDoubleExtra("duracao", 0.0)
+                val horas = (duracao / 3600).toInt()
+                val minutos = ((duracao % 3600) / 60).toInt()
+                val segundos = (duracao % 60).toInt()
+
                 tvDuracao.text = "Duração: %02d:%02d:%02d".format(horas, minutos, segundos)
 
                 cvResumo.visibility = View.VISIBLE
