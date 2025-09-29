@@ -21,10 +21,12 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.util.Log
 import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Usuario
 import br.edu.utfpr.trabalhoconclusaocurso.services.LocationService
+import br.edu.utfpr.trabalhoconclusaocurso.utils.SessaoUsuario
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
@@ -40,7 +42,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var tvPace: TextView
     private lateinit var tvCalorias: TextView
     private lateinit var tvDuracao: TextView
-    private var usuario: Usuario? = null
     private var isTracking = false
     private var polylineOptions = PolylineOptions().width(10f).color(android.graphics.Color.BLUE)
     private var primeiraPosicao = true
@@ -63,6 +64,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             )
         }
 
+        if (!SessaoUsuario.estaLogado()) {
+            redirectToLogin()
+            return
+        }
+
         btnIniciarParar = findViewById(R.id.btn_start_stop)
         btnIniciarParar.setBackgroundColor(getColor(R.color.success))
         btnOk = findViewById(R.id.btn_ok)
@@ -77,7 +83,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        usuario = intent?.getSerializableExtra("usuario") as? Usuario
+        val usuario = SessaoUsuario.getUsuario()
+        usuario?.let {
+            Toast.makeText(this, "Bem-vindo, ${it.username}!", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -103,7 +112,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             btnIniciarParar.text = "Parar"
             btnIniciarParar.setBackgroundColor(getColor(R.color.error))
             val serviceIntent = Intent(this, LocationService::class.java)
-            serviceIntent.putExtra("usuario", usuario)
             startService(serviceIntent)
         }
         isTracking = !isTracking
@@ -111,13 +119,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     fun OnClickConfiguracoes(view: View) {
         val intent = Intent(this, SettingsActivity::class.java)
-        intent.putExtra("usuario", usuario)
         startActivity(intent)
     }
 
     fun OnClickRelatorios(view: View) {
         val intent = Intent(this, RelatoriosActivity::class.java)
-        intent.putExtra("usuario", usuario)
         startActivity(intent)
     }
 
@@ -151,7 +157,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 val lat = intent.getDoubleExtra("latitude", 0.0)
                 val lon = intent.getDoubleExtra("longitude", 0.0)
 
-
                 val ponto = LatLng(lat, lon)
 
                 polylineOptions.add(ponto)
@@ -181,5 +186,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 cvResumo.visibility = View.VISIBLE
             }
         }
+    }
+
+    private fun redirectToLogin() {
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 }

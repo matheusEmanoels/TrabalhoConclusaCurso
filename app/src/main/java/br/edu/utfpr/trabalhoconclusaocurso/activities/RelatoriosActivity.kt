@@ -11,6 +11,7 @@ import br.edu.utfpr.trabalhoconclusaocurso.data.repository.AtividadeRepository
 import br.edu.utfpr.trabalhoconclusaocurso.services.DBHelper
 import br.edu.utfpr.trabalhoconclusaocurso.utils.DateValueFormatter
 import br.edu.utfpr.trabalhoconclusaocurso.utils.PaceValueFormatter
+import br.edu.utfpr.trabalhoconclusaocurso.utils.SessaoUsuario
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.BarData
@@ -19,15 +20,12 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.ValueFormatter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
-import java.util.Locale
-import kotlin.math.roundToInt
+
 
 class RelatoriosActivity : AppCompatActivity() {
 
@@ -47,7 +45,7 @@ class RelatoriosActivity : AppCompatActivity() {
         dbHelper = DBHelper(this)
         atividadeRepository = AtividadeRepository(dbHelper.writableDatabase)
 
-        usuario = intent?.getSerializableExtra("usuario") as? Usuario
+        usuario = SessaoUsuario.getUsuario()
         lifecycleScope.launch(Dispatchers.IO) {
             val atividades = atividadeRepository.listarPorUsuarioLocal(usuario?.id!!)
             if (atividades.isNotEmpty()) {

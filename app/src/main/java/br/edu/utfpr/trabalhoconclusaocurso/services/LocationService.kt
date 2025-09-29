@@ -18,6 +18,7 @@ import br.edu.utfpr.trabalhoconclusaocurso.data.model.Coordenada
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Usuario
 import br.edu.utfpr.trabalhoconclusaocurso.data.repository.AtividadeRepository
 import br.edu.utfpr.trabalhoconclusaocurso.data.repository.CoordenadaRepository
+import br.edu.utfpr.trabalhoconclusaocurso.utils.SessaoUsuario
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -71,7 +72,7 @@ class LocationService : Service(){
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground(1, createNotification())
-        usuarioLocal = intent?.getSerializableExtra("usuario") as? Usuario
+        usuarioLocal = SessaoUsuario.getUsuario()!!
         val novaAtividade = Atividade(
             id = atividadeId,
             idUsuario = usuarioLocal?.id!!,

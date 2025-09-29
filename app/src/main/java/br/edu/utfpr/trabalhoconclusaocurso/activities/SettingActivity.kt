@@ -1,6 +1,7 @@
 package br.edu.utfpr.trabalhoconclusaocurso.activities
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.CheckBox
@@ -14,6 +15,7 @@ import br.edu.utfpr.trabalhoconclusaocurso.R
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Usuario
 import br.edu.utfpr.trabalhoconclusaocurso.data.repository.UsuarioRepository
 import br.edu.utfpr.trabalhoconclusaocurso.services.DBHelper
+import br.edu.utfpr.trabalhoconclusaocurso.utils.SessaoUsuario
 import com.google.android.gms.location.LocationCallback
 import kotlinx.coroutines.launch
 
@@ -33,10 +35,11 @@ class SettingsActivity : AppCompatActivity() {
         val tvDistanciaValue = findViewById<TextView>(R.id.tvDistanciaValue)
         val checkFeedback = findViewById<CheckBox>(R.id.checkFeedback)
         val btnSave = findViewById<Button>(R.id.btnSaveConfig)
+        val btnLogout = findViewById<Button>(R.id.btnLogout)
 
         dbHelper = DBHelper(this)
         usuarioRepository = UsuarioRepository(dbHelper.writableDatabase)
-        usuario = (intent?.getSerializableExtra("usuario") as? Usuario)!!
+        usuario = SessaoUsuario.getUsuario()!!
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         seekBarFrequencia.progress = prefs.getInt(KEY_FREQUENCIA_ATUALIZACAO, 10)
@@ -78,6 +81,11 @@ class SettingsActivity : AppCompatActivity() {
 
             Toast.makeText(this, "Configurações salvas", Toast.LENGTH_SHORT).show()
         }
+
+        btnLogout.setOnClickListener {
+            SessaoUsuario.logout()
+            redirectToMap()
+        }
     }
 
     companion object Config {
@@ -99,5 +107,12 @@ class SettingsActivity : AppCompatActivity() {
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
             return prefs.getBoolean(KEY_FEEDBACK_AUDIO, true)
         }
+    }
+
+    private fun redirectToMap() {
+        val intent = Intent(this, MapActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 }

@@ -8,9 +8,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import br.edu.utfpr.trabalhoconclusaocurso.R
 import br.edu.utfpr.trabalhoconclusaocurso.data.dao.UsuarioDao
-import br.edu.utfpr.trabalhoconclusaocurso.data.model.Usuario
 import br.edu.utfpr.trabalhoconclusaocurso.data.repository.UsuarioRepository
 import br.edu.utfpr.trabalhoconclusaocurso.services.DBHelper
+import br.edu.utfpr.trabalhoconclusaocurso.utils.SessaoUsuario
 import com.google.firebase.firestore.FirebaseFirestore
 import java.security.MessageDigest
 
@@ -26,6 +26,10 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        if (SessaoUsuario.estaLogado()) {
+            redirectToMap()
+            return
+        }
         etUsername = findViewById(R.id.etUsername)
         etPassword = findViewById(R.id.etPassword)
 
@@ -35,9 +39,9 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun OnClickLogin(view: View) {
-
         if (etUsername.text.isEmpty() || etPassword.text.isEmpty()) {
             Toast.makeText(this, "Preencha todos os campos", Toast.LENGTH_SHORT).show()
+            return
         }
 
         login(etUsername.text.toString(), etPassword.text.toString())
@@ -54,15 +58,15 @@ class LoginActivity : AppCompatActivity() {
         val usuarioLocal = usuarioDao.buscarPorUsername(username)
         if (usuarioLocal != null) {
             if (usuarioLocal.usuarioSenha == senhaHash) {
-                Toast.makeText(this, "Login local bem-sucedido!", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, MapActivity::class.java)
-                intent.putExtra("usuario", usuarioLocal)
-                startActivity(intent)
-                return
+                SessaoUsuario.login(usuarioLocal)
+
+                Toast.makeText(this, "Login bem-sucedido!", Toast.LENGTH_SHORT).show()
+                redirectToMap()
             } else {
                 Toast.makeText(this, "Senha incorreta!", Toast.LENGTH_SHORT).show()
-                return
             }
+        } else {
+            Toast.makeText(this, "Usuário não encontrado!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -70,5 +74,12 @@ class LoginActivity : AppCompatActivity() {
         val digest = MessageDigest.getInstance("SHA-256")
         val hashBytes = digest.digest(senha.toByteArray(Charsets.UTF_8))
         return hashBytes.joinToString("") { "%02x".format(it) }
+    }
+
+    private fun redirectToMap() {
+        val intent = Intent(this, MapActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 }
