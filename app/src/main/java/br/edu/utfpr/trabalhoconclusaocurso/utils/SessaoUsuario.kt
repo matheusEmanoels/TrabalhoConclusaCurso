@@ -27,22 +27,15 @@ object SessaoUsuario {
         return if (estaLogado()) usuario else null
     }
 
-    fun getUsuarioId(): String? {
-        return getUsuario()?.id
-    }
-
-    fun getUsuarioNome(): String? {
-        return getUsuario()?.nome
-    }
-
-    fun getUsuarioUsername(): String? {
-        return getUsuario()?.username
-    }
-
-    fun getUsuarioPeso(): Float? {
-        return getUsuario()?.peso?.toFloat()
-
-    }
+    fun getUsuarioId(): String? = getUsuario()?.id
+    fun getUsuarioNome(): String? = getUsuario()?.nome
+    fun getUsuarioUsername(): String? = getUsuario()?.username
+    fun getUsuarioPeso(): Float? = getUsuario()?.peso?.toFloat()
+    fun getUsuarioAltura(): Float? = getUsuario()?.altura?.toFloat()
+    fun getUsuarioCPF(): String? = getUsuario()?.cpf
+    fun getUsuarioDistanciaPreferida(): Float? = getUsuario()?.distanciaPreferida?.toFloat()
+    fun getUsuarioIdade(): Int? = getUsuario()?.idade
+    fun getUsuarioSenha(): String? = getUsuario()?.usuarioSenha
 
     private fun salvarSessaoNoSharedPreferences(usuario: Usuario) {
         val prefs = App.instance.getSharedPreferences("SessaoUsuario", Context.MODE_PRIVATE)
@@ -52,8 +45,12 @@ object SessaoUsuario {
         editor.putString("usuarioId", usuario.id)
         editor.putString("usuarioNome", usuario.nome)
         editor.putString("usuarioUsername", usuario.username)
-        editor.putFloat("usuarioPeso", usuario.peso!!.toFloat())
-        editor.putFloat("usuarioDistanciaPreferida", usuario.distanciaPreferida!!.toFloat())
+        editor.putString("usuarioCPF", usuario.cpf)
+        editor.putFloat("usuarioPeso", usuario.peso?.toFloat() ?: 0f)
+        editor.putFloat("usuarioAltura", usuario.altura?.toFloat() ?: 0f)
+        editor.putFloat("usuarioDistanciaPreferida", usuario.distanciaPreferida?.toFloat() ?: 0f)
+        editor.putInt("usuarioIdade", usuario.idade ?: 0)
+        editor.putString("usuarioSenha", usuario.usuarioSenha)
 
         editor.apply()
     }
@@ -67,18 +64,16 @@ object SessaoUsuario {
         val prefs = App.instance.getSharedPreferences("SessaoUsuario", Context.MODE_PRIVATE)
 
         if (prefs.getBoolean("isLoggedIn", false)) {
-            val usuarioId = prefs.getString("usuarioId", "")
-            val usuarioNome = prefs.getString("usuarioNome", "") ?: ""
-            val usuarioUsername = prefs.getString("usuarioUsername", "") ?: ""
-            val usuarioPeso = prefs.getFloat("usuarioPeso", 0f)
-            val usuarioDistanciaPreferida = prefs.getFloat("usuarioDistanciaPreferida", 0f)
-
             val usuario = Usuario().apply {
-                this.id = usuarioId
-                this.nome = usuarioNome
-                this.username = usuarioUsername
-                this.peso = usuarioPeso.toDouble()
-                this.distanciaPreferida = usuarioDistanciaPreferida.toDouble()
+                id = prefs.getString("usuarioId", "")
+                nome = prefs.getString("usuarioNome", "")
+                username = prefs.getString("usuarioUsername", "")
+                cpf = prefs.getString("usuarioCPF", "")
+                peso = prefs.getFloat("usuarioPeso", 0f).toDouble()
+                altura = prefs.getFloat("usuarioAltura", 0f).toDouble()
+                distanciaPreferida = prefs.getFloat("usuarioDistanciaPreferida", 0f).toDouble()
+                idade = prefs.getInt("usuarioIdade", 0)
+                usuarioSenha = prefs.getString("usuarioSenha", "")
             }
 
             this.usuario = usuario
