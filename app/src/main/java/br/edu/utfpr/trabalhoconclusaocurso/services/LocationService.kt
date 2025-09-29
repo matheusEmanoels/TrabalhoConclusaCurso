@@ -72,7 +72,7 @@ class LocationService : Service(){
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground(1, createNotification())
-        usuarioLocal = SessaoUsuario.getUsuario()!!
+        usuarioLocal = SessaoUsuario.getUsuario()
         val novaAtividade = Atividade(
             id = atividadeId,
             idUsuario = usuarioLocal?.id!!,

@@ -39,6 +39,11 @@ object SessaoUsuario {
         return getUsuario()?.username
     }
 
+    fun getUsuarioPeso(): Float? {
+        return getUsuario()?.peso?.toFloat()
+
+    }
+
     private fun salvarSessaoNoSharedPreferences(usuario: Usuario) {
         val prefs = App.instance.getSharedPreferences("SessaoUsuario", Context.MODE_PRIVATE)
         val editor = prefs.edit()
@@ -47,6 +52,8 @@ object SessaoUsuario {
         editor.putString("usuarioId", usuario.id)
         editor.putString("usuarioNome", usuario.nome)
         editor.putString("usuarioUsername", usuario.username)
+        editor.putFloat("usuarioPeso", usuario.peso!!.toFloat())
+        editor.putFloat("usuarioDistanciaPreferida", usuario.distanciaPreferida!!.toFloat())
 
         editor.apply()
     }
@@ -63,12 +70,15 @@ object SessaoUsuario {
             val usuarioId = prefs.getString("usuarioId", "")
             val usuarioNome = prefs.getString("usuarioNome", "") ?: ""
             val usuarioUsername = prefs.getString("usuarioUsername", "") ?: ""
-            val usuarioEmail = prefs.getString("usuarioEmail", "")
+            val usuarioPeso = prefs.getFloat("usuarioPeso", 0f)
+            val usuarioDistanciaPreferida = prefs.getFloat("usuarioDistanciaPreferida", 0f)
 
             val usuario = Usuario().apply {
                 this.id = usuarioId
                 this.nome = usuarioNome
                 this.username = usuarioUsername
+                this.peso = usuarioPeso.toDouble()
+                this.distanciaPreferida = usuarioDistanciaPreferida.toDouble()
             }
 
             this.usuario = usuario
