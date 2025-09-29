@@ -91,6 +91,13 @@
         android:padding="16dp">
 
         <Button
+            android:id="@+id/btn_rel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="Relatorios"
+            android:onClick="OnClickRelatorios"/>
+        <Button
             android:id="@+id/btn_start_stop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

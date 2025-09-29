@@ -115,6 +115,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         startActivity(intent)
     }
 
+    fun OnClickRelatorios(view: View) {
+        val intent = Intent(this, RelatoriosActivity::class.java)
+        intent.putExtra("usuario", usuario)
+        startActivity(intent)
+    }
+
     override fun onResume() {
         super.onResume()
         val filter = IntentFilter("LOCATION_UPDATE")
