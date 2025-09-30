@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import br.edu.utfpr.trabalhoconclusaocurso.R
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -19,17 +18,18 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import br.edu.utfpr.trabalhoconclusaocurso.data.model.Usuario
+import br.edu.utfpr.trabalhoconclusaocurso.data.repository.CoordenadaRepository
+import br.edu.utfpr.trabalhoconclusaocurso.services.DBHelper
 import br.edu.utfpr.trabalhoconclusaocurso.services.LocationService
 import br.edu.utfpr.trabalhoconclusaocurso.utils.SessaoUsuario
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
+import java.util.UUID
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
@@ -42,6 +42,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var tvPace: TextView
     private lateinit var tvCalorias: TextView
     private lateinit var tvDuracao: TextView
+    private lateinit var atividadeId: String
+    private lateinit var dbHelper: DBHelper
+    private lateinit var coordenadaRepository: CoordenadaRepository
     private var isTracking = false
     private var polylineOptions = PolylineOptions().width(10f).color(android.graphics.Color.BLUE)
     private var primeiraPosicao = true
@@ -49,8 +52,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
+        dbHelper = DBHelper(this)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        coordenadaRepository = CoordenadaRepository(dbHelper.writableDatabase)
 
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -87,6 +92,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         usuario?.let {
             Toast.makeText(this, "Bem-vindo, ${it.username}!", Toast.LENGTH_SHORT).show()
         }
+
+        isTracking = carregarFlag(this)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -111,10 +118,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }else{
             btnIniciarParar.text = "Parar"
             btnIniciarParar.setBackgroundColor(getColor(R.color.error))
+            atividadeId = UUID.randomUUID().toString()
             val serviceIntent = Intent(this, LocationService::class.java)
+            serviceIntent.putExtra("atividadeId", atividadeId)
             startService(serviceIntent)
         }
         isTracking = !isTracking
+        salvarFlag(this, isTracking)
     }
 
     fun OnClickConfiguracoes(view: View) {
@@ -193,5 +203,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
+    }
+
+
+    fun salvarFlag(context: Context, isTracking: Boolean) {
+        val sharedPref = context.getSharedPreferences("IsTracking", Context.MODE_PRIVATE)
+        sharedPref.edit().putBoolean("IS_TRACKING", isTracking).apply()
+    }
+
+    fun carregarFlag(context: Context): Boolean {
+        val sharedPref = context.getSharedPreferences("IsTracking", Context.MODE_PRIVATE)
+        return sharedPref.getBoolean("IS_TRACKING", false)
     }
 }

@@ -28,7 +28,6 @@ class UsuarioDao(private val db: SQLiteDatabase) {
         val values = ContentValues().apply {
             put(DBHelper.COL_USUARIO_NOME, usuario.nome)
             put(DBHelper.COL_USUARIO_USERNAME, usuario.username)
-            put(DBHelper.COL_USUARIO_SENHA, usuario.usuarioSenha)
             put(DBHelper.COL_USUARIO_IDADE, usuario.idade)
             put(DBHelper.COL_USUARIO_ALTURA, usuario.altura)
             put(DBHelper.COL_USUARIO_PESO, usuario.peso)

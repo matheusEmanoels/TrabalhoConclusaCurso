@@ -58,8 +58,6 @@ class LocationService : Service(){
         atividadeRepository = AtividadeRepository(dbHelper.writableDatabase)
         coordenadaRepository = CoordenadaRepository(dbHelper.writableDatabase)
 
-        atividadeId = UUID.randomUUID().toString()
-
         val frequencia = SettingsActivity.Config.getFrequenciaAtualizacao(this)
         frequenciaCoordenadas =  if (frequencia > 0 && frequencia < 60) {
             (frequencia * 1000.0).toLong()
@@ -72,6 +70,7 @@ class LocationService : Service(){
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground(1, createNotification())
+        atividadeId = intent?.getStringExtra("atividadeId") ?: ""
         usuarioLocal = SessaoUsuario.getUsuario()
         val novaAtividade = Atividade(
             id = atividadeId,
