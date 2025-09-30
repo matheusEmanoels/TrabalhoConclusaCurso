@@ -35,10 +35,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var btnIniciarParar: Button
+    private lateinit var btnRelatorios: Button
+    private lateinit var btnConfiguracoes: Button
     private lateinit var btnOk: Button
     private lateinit var cvResumo : CardView
     private lateinit var tvDistancia: TextView
-    private lateinit var tvVelocidade: TextView
     private lateinit var tvPace: TextView
     private lateinit var tvCalorias: TextView
     private lateinit var tvDuracao: TextView
@@ -48,6 +49,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private var isTracking = false
     private var polylineOptions = PolylineOptions().width(10f).color(android.graphics.Color.BLUE)
     private var primeiraPosicao = true
+    private val pontosPercurso = mutableListOf<LatLng>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,11 +78,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         btnIniciarParar = findViewById(R.id.btn_start_stop)
         btnIniciarParar.setBackgroundColor(getColor(R.color.success))
+        btnRelatorios = findViewById(R.id.btn_rel)
+        btnConfiguracoes = findViewById(R.id.btn_settings)
         btnOk = findViewById(R.id.btn_ok)
         btnOk.setBackgroundColor(getColor(R.color.success))
         cvResumo = findViewById(R.id.info_panel)
         tvDistancia = findViewById(R.id.tv_distancia)
-        tvVelocidade = findViewById(R.id.tv_velocidade)
         tvPace = findViewById(R.id.tv_pace)
         tvCalorias = findViewById(R.id.tv_calorias)
         tvDuracao = findViewById(R.id.tv_duracao)
@@ -155,10 +158,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         map.clear()
         polylineOptions = PolylineOptions()
         tvDistancia.text = "Distância: 0.00 km"
-        tvVelocidade.text = "Velocidade Média: 0.0 km/h"
         tvPace.text = "Pace Médio: 0'00\" /km"
         tvCalorias.text = "Calorias: 0 kcal"
         tvDuracao.text = "Duração: 00:00:00"
+
+        btnIniciarParar.visibility = View.VISIBLE
+        btnRelatorios.visibility = View.VISIBLE
+        btnConfiguracoes.visibility = View.VISIBLE
     }
 
     private val locationReceiver = object : BroadcastReceiver() {
@@ -168,6 +174,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 val lon = intent.getDoubleExtra("longitude", 0.0)
 
                 val ponto = LatLng(lat, lon)
+                pontosPercurso.add(ponto)
 
                 polylineOptions.add(ponto)
                 map.clear()
@@ -182,7 +189,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == "FINAL_UPDATE"){
                 tvDistancia.text = "Distância: %.2f km".format(intent.getDoubleExtra("distancia", 0.0))
-                tvVelocidade.text = "Velocidade Média: %.2f km/h".format(intent.getDoubleExtra("velocidade", 0.0))
                 tvPace.text = "Pace Médio: %d'%02d\" /km".format(intent.getIntExtra("paceMin", 0), intent.getIntExtra("paceSec", 0))
                 tvCalorias.text = "Calorias: %.0f kcal".format(intent.getDoubleExtra("calorias", 0.0))
 
@@ -194,6 +200,20 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 tvDuracao.text = "Duração: %02d:%02d:%02d".format(horas, minutos, segundos)
 
                 cvResumo.visibility = View.VISIBLE
+                btnIniciarParar.visibility = View.GONE
+                btnRelatorios.visibility = View.GONE
+                btnConfiguracoes.visibility = View.GONE
+
+                if (pontosPercurso.isNotEmpty()) {
+                    val boundsBuilder = com.google.android.gms.maps.model.LatLngBounds.Builder()
+                    for (p in pontosPercurso) {
+                        boundsBuilder.include(p)
+                    }
+                    val bounds = boundsBuilder.build()
+                    val padding = 100
+                    val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+                    map.animateCamera(cameraUpdate)
+                }
             }
         }
     }
