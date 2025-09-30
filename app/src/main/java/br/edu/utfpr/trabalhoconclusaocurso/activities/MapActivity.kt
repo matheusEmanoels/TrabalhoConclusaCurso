@@ -165,6 +165,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         btnIniciarParar.visibility = View.VISIBLE
         btnRelatorios.visibility = View.VISIBLE
         btnConfiguracoes.visibility = View.VISIBLE
+        pontosPercurso.clear()
     }
 
     private val locationReceiver = object : BroadcastReceiver() {
