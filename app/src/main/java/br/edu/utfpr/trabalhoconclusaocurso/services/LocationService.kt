@@ -111,12 +111,19 @@ class LocationService : Service(){
                 }
                 lastLocation = location
 
-                val duracao = (System.currentTimeMillis() - startTime) / 1000.0
-                val horas = duracao / 3600.0
+                // Duração em segundos
+                val duracaoSegundos = (System.currentTimeMillis() - startTime) / 1000.0
+                val duracaoHoras = duracaoSegundos / 3600.0
 
-                val velocidadeMedia = if (horas > 0) (totalDistance / 1000.0) / horas else 0.0
+                // Velocidade média em km/h
+                val velocidadeMedia = if (duracaoHoras > 0) (totalDistance / 1000.0) / duracaoHoras else 0.0
 
-                val calorias = calcGastoCalorias(velocidadeMedia, usuarioLocal?.peso!!, horas)
+                // Pace em min/km
+                val pace = if (totalDistance > 0) (duracaoSegundos / 60.0) / (totalDistance / 1000.0) else 0.0
+                val paceMin = pace.toInt()
+                val paceSec = ((pace - paceMin) * 60).toInt()
+
+                val calorias = calcGastoCalorias(velocidadeMedia, usuarioLocal?.peso!!, duracaoHoras)
 
                 val coordenada = Coordenada(
                     id = UUID.randomUUID().toString(),
@@ -129,9 +136,10 @@ class LocationService : Service(){
                 }
 
                 if(SettingsActivity.Config.isFeedbackAudioLigado(this@LocationService)) {
-                    atualizarProgresso(totalDistance, horas, velocidadeMedia)
+                    atualizarProgresso(totalDistance, duracaoSegundos, velocidadeMedia)
                 }
-                sendLocationToActivity(location, totalDistance, velocidadeMedia, calorias)
+
+                sendLocationToActivity(location, totalDistance, velocidadeMedia, calorias, paceMin, paceSec, duracaoSegundos)
             }
         }
     }
@@ -140,31 +148,31 @@ class LocationService : Service(){
         super.onDestroy()
         fusedLocationClient.removeLocationUpdates(locationCallback)
 
-        val duracao = (System.currentTimeMillis() - startTime) / 1000.0
-        val horas = duracao / 3.600
-        val velocidadeMedia = if (horas > 0) (totalDistance / 1000.0) / horas else 0.0
-        val calorias = calcGastoCalorias(velocidadeMedia, usuarioLocal?.peso!!, horas)
+        val duracaoSegundos = (System.currentTimeMillis() - startTime) / 1000.0
+        val duracaoHoras = duracaoSegundos / 3600.0
+        val velocidadeMedia = if (duracaoHoras > 0) (totalDistance / 1000.0) / duracaoHoras else 0.0
 
-        val pace = if (velocidadeMedia > 0) 60.0 / velocidadeMedia else 0.0
-
+        val pace = if (totalDistance > 0) (duracaoSegundos / 60.0) / (totalDistance / 1000.0) else 0.0
         val paceMin = pace.toInt()
         val paceSec = ((pace - paceMin) * 60).toInt()
+
+        val calorias = calcGastoCalorias(velocidadeMedia, usuarioLocal?.peso!!, duracaoHoras)
 
         val atividadeFinal = Atividade(
             id = atividadeId,
             idUsuario = usuarioLocal?.id!!,
             nome = "Corrida",
             dataHora = startTime.toString(),
-            duracao = duracao.toLong(),
+            duracao = duracaoSegundos.toLong(), // em segundos
             distancia = totalDistance,
-            velocidadeMedia = pace,
+            velocidadeMedia = velocidadeMedia, // km/h correto
             caloriasPerdidas = calorias
         )
         serviceScope.launch {
             atividadeRepository.atualizar(atividadeFinal)
         }
 
-        sendResToActivity(paceMin, paceSec, (totalDistance/1000), velocidadeMedia, calorias, duracao)
+        sendResToActivity(paceMin, paceSec, (totalDistance / 1000), velocidadeMedia, calorias, duracaoSegundos)
 
         distanciaAcumulada = 0.0
         proximoAviso = 500
@@ -195,13 +203,24 @@ class LocationService : Service(){
 
     override fun onBind(intent: Intent?): IBinder? = null
 
-    private fun sendLocationToActivity(location: Location, totalDistance: Double, velocidadeMedia: Double, calorias: Double) {
+    private fun sendLocationToActivity(
+        location: Location,
+        totalDistance: Double,
+        velocidadeMedia: Double,
+        calorias: Double,
+        paceMin: Int,
+        paceSec: Int,
+        duracao: Double
+    ) {
         val intent = Intent("LOCATION_UPDATE")
         intent.putExtra("latitude", location.latitude)
         intent.putExtra("longitude", location.longitude)
         intent.putExtra("distancia", totalDistance)
         intent.putExtra("velocidade", velocidadeMedia)
         intent.putExtra("calorias", calorias)
+        intent.putExtra("paceMin", paceMin)
+        intent.putExtra("paceSec", paceSec)
+        intent.putExtra("duracao", duracao)
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
 

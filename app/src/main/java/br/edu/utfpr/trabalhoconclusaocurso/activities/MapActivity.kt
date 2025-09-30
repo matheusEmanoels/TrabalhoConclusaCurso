@@ -181,6 +181,21 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 map.addPolyline(polylineOptions)
                 map.addMarker(MarkerOptions().position(ponto).title("Posição atual"))
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(ponto, 17f))
+
+                val distancia = intent.getDoubleExtra("distancia", 0.0)
+                val paceMin = intent.getIntExtra("paceMin", 0)
+                val paceSec = intent.getIntExtra("paceSec", 0)
+                val calorias = intent.getDoubleExtra("calorias", 0.0)
+                val duracao = intent.getDoubleExtra("duracao", 0.0)
+
+                tvDistancia.text = "Distância: %.2f km".format(distancia / 1000)
+                tvPace.text = "Pace Médio: %d'%02d\" /km".format(paceMin, paceSec)
+                tvCalorias.text = "Calorias: %.0f kcal".format(calorias)
+
+                val horas = (duracao / 3600).toInt()
+                val minutos = ((duracao % 3600) / 60).toInt()
+                val segundos = (duracao % 60).toInt()
+                tvDuracao.text = "Duração: %02d:%02d:%02d".format(horas, minutos, segundos)
             }
         }
     }
