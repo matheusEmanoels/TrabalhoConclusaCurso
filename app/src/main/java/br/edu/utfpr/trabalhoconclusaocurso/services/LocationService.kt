@@ -18,7 +18,6 @@ import br.edu.utfpr.trabalhoconclusaocurso.data.model.Coordenada
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Usuario
 import br.edu.utfpr.trabalhoconclusaocurso.data.repository.AtividadeRepository
 import br.edu.utfpr.trabalhoconclusaocurso.data.repository.CoordenadaRepository
-import br.edu.utfpr.trabalhoconclusaocurso.utils.KalmanFilter
 import br.edu.utfpr.trabalhoconclusaocurso.utils.SessaoUsuario
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -48,7 +47,7 @@ class LocationService : Service(){
     private lateinit var atividadeId: String
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
-    private val kalmanFilter = KalmanFilter()
+
 
     override fun onCreate() {
         super.onCreate()
@@ -105,14 +104,7 @@ class LocationService : Service(){
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
-            for (rawLocation in result.locations) {
-                val (lat, lon) = kalmanFilter.process(rawLocation.latitude, rawLocation.longitude)
-
-                val location = Location(rawLocation).apply {
-                    latitude = lat
-                    longitude = lon
-                }
-
+            for (location in result.locations) {
                 if (lastLocation != null) {
                     val distance = lastLocation!!.distanceTo(location).toDouble()
                     totalDistance += distance
@@ -143,7 +135,7 @@ class LocationService : Service(){
                     coordenadaRepository.salvar(coordenada, usuarioLocal?.id!!)
                 }
 
-                if (SettingsActivity.Config.isFeedbackAudioLigado(this@LocationService)) {
+                if(SettingsActivity.Config.isFeedbackAudioLigado(this@LocationService)) {
                     atualizarProgresso(totalDistance, duracaoSegundos, velocidadeMedia)
                 }
 
