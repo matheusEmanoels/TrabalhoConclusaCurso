@@ -32,6 +32,7 @@ class RelatoriosActivity : AppCompatActivity() {
     private lateinit var lineChart: LineChart
     private lateinit var barChart: BarChart
     private lateinit var dbHelper: DBHelper
+    private lateinit var barChartDistanciaDiaria: BarChart
     private lateinit var atividadeRepository: AtividadeRepository
     private var usuario: Usuario? = null
 
@@ -41,6 +42,7 @@ class RelatoriosActivity : AppCompatActivity() {
 
         lineChart = findViewById(R.id.lineChartDistancia)
         barChart = findViewById(R.id.barChartDuracao)
+        barChartDistanciaDiaria = findViewById(R.id.barChartDistanciaDiaria)
 
         dbHelper = DBHelper(this)
         atividadeRepository = AtividadeRepository(dbHelper.writableDatabase)
@@ -53,6 +55,7 @@ class RelatoriosActivity : AppCompatActivity() {
                     configurarGraficoDistancia(atividades)
                     configurarGraficoDuracaoSemanal(atividades)
                     configurarGraficoPace(atividades)
+                    configurarGraficoDistanciaDiaria(atividades)
                 }
             }
         }
@@ -136,6 +139,42 @@ class RelatoriosActivity : AppCompatActivity() {
             xAxis.position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
             axisLeft.valueFormatter = PaceValueFormatter()
             animateX(1000)
+            invalidate()
+        }
+    }
+
+    private fun configurarGraficoDistanciaDiaria(atividades: List<Atividade>) {
+        val calendar = Calendar.getInstance()
+
+        // Agrupar atividades por DIA
+        val distanciaDiaria = atividades.groupBy { atividade ->
+            val timestamp = atividade.dataHora.toLong()
+            val date = Date(timestamp)
+            calendar.time = date
+            "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH)+1}"
+        }.mapValues { entry ->
+            entry.value.sumOf { it.distancia }
+        }
+
+        // Criar as entradas (BarEntry) com índice incremental
+        val labels = distanciaDiaria.keys.toList()
+        val entries = distanciaDiaria.values.mapIndexed { index, distancia ->
+            BarEntry(index.toFloat(), (distancia / 1000f).toFloat())
+        }
+
+        val dataSet = BarDataSet(entries, "Distância diária (km)").apply {
+            color = Color.CYAN
+            valueTextColor = Color.BLACK
+        }
+
+        barChartDistanciaDiaria.apply {
+            data = BarData(dataSet)
+            description.isEnabled = false
+            axisRight.isEnabled = false
+            xAxis.granularity = 1f
+            xAxis.valueFormatter = com.github.mikephil.charting.formatter.IndexAxisValueFormatter(labels)
+            xAxis.position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
+            animateY(1000)
             invalidate()
         }
     }

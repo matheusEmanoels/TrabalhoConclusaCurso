@@ -1,80 +1,112 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <!-- Conteúdo da tela com ScrollView -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:showDividers="middle">
+        android:layout_height="match_parent"
+        android:padding="16dp">
 
-        <!-- Frequência de atualização -->
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Frequência de Atualização (segundos)"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:layout_marginBottom="8dp"/>
+            android:orientation="vertical"
+            android:showDividers="middle">
 
-        <SeekBar
-            android:id="@+id/seekBarFrequencia"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:max="60"
-            android:progress="10"/>
+            <!-- Frequência de atualização -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Frequência de Atualização (segundos)"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:layout_marginBottom="8dp"/>
 
-        <TextView
-            android:id="@+id/tvFrequenciaValue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="10s"
-            android:gravity="center"/>
+            <SeekBar
+                android:id="@+id/seekBarFrequencia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="60"
+                android:progress="10"/>
 
-        <!-- Distância desejada -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Distância Desejada (Quilometros)"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"/>
+            <TextView
+                android:id="@+id/tvFrequenciaValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="10s"
+                android:gravity="center"/>
 
-        <SeekBar
-            android:id="@+id/seekBarDistancia"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:max="100"
-            android:progress="100"/>
+            <!-- Distância desejada -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Distância Desejada (Quilometros)"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"/>
 
-        <TextView
-            android:id="@+id/tvDistanciaValue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="100km"
-            android:gravity="center"/>
+            <SeekBar
+                android:id="@+id/seekBarDistancia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="100"
+                android:progress="100"/>
 
-        <!-- Feedback por áudio -->
-        <CheckBox
-            android:id="@+id/checkFeedback"
+            <TextView
+                android:id="@+id/tvDistanciaValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="100km"
+                android:gravity="center"/>
+
+            <!-- Feedback por áudio -->
+            <CheckBox
+                android:id="@+id/checkFeedback"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ativar feedback por áudio"
+                android:layout_marginTop="16dp"/>
+
+            <Button
+                android:id="@+id/btnSaveConfig"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Salvar Configurações"
+                android:layout_marginTop="24dp"/>
+
+            <Button
+                android:id="@+id/btnSync"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sincronizar Dados"
+                android:layout_marginTop="16dp"/>
+
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sair"
+                android:layout_marginTop="24dp"/>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Overlay de loading -->
+    <FrameLayout
+        android:id="@+id/layoutLoading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="#88000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <ProgressBar
+            android:id="@+id/progressLoading"
+            style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ativar feedback por áudio"
-            android:layout_marginTop="16dp"/>
-
-        <Button
-            android:id="@+id/btnSaveConfig"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Salvar Configurações"
-            android:layout_marginTop="24dp"/>
-
-        <Button
-            android:id="@+id/btnLogout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Sair"
-            android:layout_marginTop="24dp"/>
-    </LinearLayout>
-</ScrollView>
+            android:indeterminate="true"
+            android:layout_gravity="center"/>
+    </FrameLayout>
+</FrameLayout>

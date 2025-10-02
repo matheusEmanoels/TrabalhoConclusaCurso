@@ -1,12 +1,12 @@
 package br.edu.utfpr.trabalhoconclusaocurso.data.model
 
 data class Atividade(
-    val id: String,
-    val idUsuario: String,
-    val nome: String,
-    val dataHora: String,
-    val duracao: Long,
-    val distancia: Double,
-    val velocidadeMedia: Double,
-    val caloriasPerdidas: Double?
+    var id: String = "",
+    var idUsuario: String = "",
+    var nome: String = "",
+    var dataHora: String = "",
+    var duracao: Long = 0,
+    var distancia: Double = 0.0,
+    var velocidadeMedia: Double = 0.0,
+    var caloriasPerdidas: Double? = 0.0
 )

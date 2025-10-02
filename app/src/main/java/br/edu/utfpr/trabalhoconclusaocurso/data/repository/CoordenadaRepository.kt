@@ -1,6 +1,7 @@
 package br.edu.utfpr.trabalhoconclusaocurso.data.repository
 
 import android.database.sqlite.SQLiteDatabase
+import android.util.Log
 import br.edu.utfpr.trabalhoconclusaocurso.data.dao.CoordenadaDao
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Coordenada
 import com.google.firebase.firestore.FirebaseFirestore
@@ -27,16 +28,41 @@ class CoordenadaRepository(private val db: SQLiteDatabase) {
         coordenadaDao.listarPorAtividade(idAtividade)
 
     suspend fun sincronizar(idUsuario: String, idAtividade: String) {
-        val snapshot = firebase.document(idUsuario)
-            .collection("atividades")
-            .document(idAtividade)
-            .collection("coordenadas")
-            .get()
-            .await()
+        try {
+            // Firebase → SQLite
+            val snapshot = firebase.document(idUsuario)
+                .collection("atividades")
+                .document(idAtividade)
+                .collection("coordenadas")
+                .get()
+                .await()
 
-        snapshot.documents.forEach { doc ->
-            val coordenada = doc.toObject(Coordenada::class.java)
-            coordenada?.let { coordenadaDao.inserir(it) }
+            snapshot.documents.forEach { doc ->
+                val coordenada = doc.toObject(Coordenada::class.java)
+                coordenada?.let {
+                    val existente = coordenadaDao.buscarPorId(it.id!!)
+                    if (existente == null) {
+                        coordenadaDao.inserir(it)
+                    } else {
+                        coordenadaDao.atualizar(it)
+                    }
+                }
+            }
+
+            // SQLite → Firebase
+            val coordenadasLocais = coordenadaDao.listarPorAtividade(idAtividade)
+            coordenadasLocais.forEach { coordenada ->
+                firebase.document(idUsuario)
+                    .collection("atividades")
+                    .document(idAtividade)
+                    .collection("coordenadas")
+                    .document(coordenada.id!!)
+                    .set(coordenada)
+                    .await()
+            }
+
+        } catch (e: Exception) {
+            Log.e("SYNC", "Erro ao sincronizar coordenadas", e)
         }
     }
 }

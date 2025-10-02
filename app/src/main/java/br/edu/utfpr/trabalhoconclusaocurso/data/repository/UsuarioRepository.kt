@@ -43,7 +43,7 @@ class UsuarioRepository(private val db: SQLiteDatabase) {
             snapshot.documents.forEach { doc ->
                 val usuario = doc.toObject(Usuario::class.java)
                 usuario?.let {
-                    val existente = usuarioDao.buscarPorId(it.id!!)
+                    val existente = usuarioDao.buscarPorId(it.id!!) ?: usuarioDao.buscarPorUsername(it.username!!)
                     if (existente == null) {
                         usuarioDao.inserir(it)
                     } else {

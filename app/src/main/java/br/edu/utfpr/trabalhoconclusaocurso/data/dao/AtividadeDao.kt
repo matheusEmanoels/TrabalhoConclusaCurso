@@ -23,6 +23,8 @@ class AtividadeDao(private val db: SQLiteDatabase) {
 
     fun atualizar(atividade: Atividade) {
         val values = ContentValues().apply {
+            put("nome", atividade.nome)
+            put("data_hora", atividade.dataHora)
             put("duracao", atividade.duracao)
             put("distancia", atividade.distancia)
             put("velocidade_media", atividade.velocidadeMedia)
@@ -55,5 +57,27 @@ class AtividadeDao(private val db: SQLiteDatabase) {
         }
         cursor.close()
         return lista
+    }
+
+    fun buscarPorId(id: String): Atividade? {
+        val cursor = db.query(
+            "Atividade", null, "id=?", arrayOf(id), null, null, null
+        )
+        var atividade: Atividade? = null
+
+        if (cursor.moveToFirst()) {
+            atividade = Atividade(
+                id = cursor.getString(cursor.getColumnIndexOrThrow("id")),
+                idUsuario = cursor.getString(cursor.getColumnIndexOrThrow("id_usuario")),
+                nome = cursor.getString(cursor.getColumnIndexOrThrow("nome")),
+                dataHora = cursor.getString(cursor.getColumnIndexOrThrow("data_hora")),
+                duracao = cursor.getLong(cursor.getColumnIndexOrThrow("duracao")),
+                distancia = cursor.getDouble(cursor.getColumnIndexOrThrow("distancia")),
+                velocidadeMedia = cursor.getDouble(cursor.getColumnIndexOrThrow("velocidade_media")),
+                caloriasPerdidas = cursor.getDouble(cursor.getColumnIndexOrThrow("calorias_perdidas"))
+            )
+        }
+        cursor.close()
+        return atividade
     }
 }

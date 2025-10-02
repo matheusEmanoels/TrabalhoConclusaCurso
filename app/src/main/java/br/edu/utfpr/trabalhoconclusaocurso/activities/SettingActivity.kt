@@ -2,9 +2,14 @@ package br.edu.utfpr.trabalhoconclusaocurso.activities
 
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.FrameLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
@@ -13,6 +18,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import br.edu.utfpr.trabalhoconclusaocurso.R
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Usuario
+import br.edu.utfpr.trabalhoconclusaocurso.data.repository.AtividadeRepository
+import br.edu.utfpr.trabalhoconclusaocurso.data.repository.CoordenadaRepository
 import br.edu.utfpr.trabalhoconclusaocurso.data.repository.UsuarioRepository
 import br.edu.utfpr.trabalhoconclusaocurso.services.DBHelper
 import br.edu.utfpr.trabalhoconclusaocurso.utils.SessaoUsuario
@@ -22,6 +29,8 @@ import kotlinx.coroutines.launch
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var usuarioRepository: UsuarioRepository
+    private lateinit var atividadeRepository: AtividadeRepository
+    private lateinit var coordenadaRepository: CoordenadaRepository
     private lateinit var usuario: Usuario
     private lateinit var dbHelper: DBHelper
 
@@ -36,9 +45,12 @@ class SettingsActivity : AppCompatActivity() {
         val checkFeedback = findViewById<CheckBox>(R.id.checkFeedback)
         val btnSave = findViewById<Button>(R.id.btnSaveConfig)
         val btnLogout = findViewById<Button>(R.id.btnLogout)
+        val btnSync = findViewById<Button>(R.id.btnSync)
 
         dbHelper = DBHelper(this)
         usuarioRepository = UsuarioRepository(dbHelper.writableDatabase)
+        atividadeRepository = AtividadeRepository(dbHelper.writableDatabase)
+        coordenadaRepository = CoordenadaRepository(dbHelper.writableDatabase)
         usuario = SessaoUsuario.getUsuario()!!
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
@@ -82,6 +94,27 @@ class SettingsActivity : AppCompatActivity() {
             Toast.makeText(this, "Configurações salvas", Toast.LENGTH_SHORT).show()
         }
 
+        btnSync.setOnClickListener {
+            if (!isOnline()) {
+                Toast.makeText(this, "Sem conexão com a internet, não foi possivel sincronizar dados", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
+            showLoading(true) // mostra overlay
+
+            lifecycleScope.launch {
+                try {
+                    sincronizarAll(usuario.id!!)
+                    Toast.makeText(this@SettingsActivity, "Sincronização concluída!", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    Toast.makeText(this@SettingsActivity, "Erro ao sincronizar!", Toast.LENGTH_SHORT).show()
+                    Log.e("SYNC", "Erro ao sincronizar tudo", e)
+                } finally {
+                    showLoading(false) // esconde overlay
+                }
+            }
+        }
+
         btnLogout.setOnClickListener {
             SessaoUsuario.logout()
             redirectToMap()
@@ -114,5 +147,32 @@ class SettingsActivity : AppCompatActivity() {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
+    }
+
+    private fun isOnline(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    suspend fun sincronizarAll(idUsuario: String) {
+        try {
+            atividadeRepository.sincronizar(idUsuario)
+
+            val atividades = atividadeRepository.listarPorUsuarioLocal(idUsuario)
+            atividades.forEach { atividade ->
+                coordenadaRepository.sincronizar(idUsuario, atividade.id!!)
+            }
+
+        } catch (e: Exception) {
+            Log.e("SYNC", "Erro ao sincronizar tudo", e)
+            throw e
+        }
+    }
+
+    private fun showLoading(show: Boolean) {
+        val layoutLoading = findViewById<FrameLayout>(R.id.layoutLoading)
+        layoutLoading.visibility = if (show) View.VISIBLE else View.GONE
     }
 }

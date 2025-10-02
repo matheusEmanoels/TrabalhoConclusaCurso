@@ -1,8 +1,8 @@
 package br.edu.utfpr.trabalhoconclusaocurso.data.model
 
 data class Coordenada(
-    val id: String ,
-    val idAtividade: String,
-    val latitude: Double,
-    val longitude: Double
+    var id: String = "",
+    var idAtividade: String = "",
+    var latitude: Double = 0.0,
+    var longitude: Double = 0.0
 )

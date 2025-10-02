@@ -103,4 +103,14 @@ class UsuarioDao(private val db: SQLiteDatabase) {
             distanciaPreferida = cursor.getDouble(cursor.getColumnIndexOrThrow(DBHelper.COL_USUARIO_DISTANCIA_PREF))
         )
     }
+
+    fun inserirOuAtualizar(usuario: Usuario): Long {
+        val existente = buscarPorUsername(usuario.username!!)
+        return if (existente == null) {
+            inserir(usuario)
+        } else {
+            atualizar(usuario)
+            0 // retorna 0 só pra indicar que foi update
+        }
+    }
 }

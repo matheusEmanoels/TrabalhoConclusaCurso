@@ -1,6 +1,7 @@
 package br.edu.utfpr.trabalhoconclusaocurso.data.repository
 
 import android.database.sqlite.SQLiteDatabase
+import android.util.Log
 import br.edu.utfpr.trabalhoconclusaocurso.data.dao.AtividadeDao
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Atividade
 import com.google.firebase.firestore.FirebaseFirestore
@@ -37,14 +38,37 @@ class AtividadeRepository(private val db: SQLiteDatabase) {
         atividadeDao.listarPorUsuario(idUsuario)
 
     suspend fun sincronizar(idUsuario: String) {
-        val snapshot = firebase.document(idUsuario)
-            .collection("atividades")
-            .get()
-            .await()
+        try {
+            // Firebase → SQLite
+            val snapshot = firebase.document(idUsuario)
+                .collection("atividades")
+                .get()
+                .await()
 
-        snapshot.documents.forEach { doc ->
-            val atividade = doc.toObject(Atividade::class.java)
-            atividade?.let { atividadeDao.inserir(it) }
+            snapshot.documents.forEach { doc ->
+                val atividade = doc.toObject(Atividade::class.java)
+                atividade?.let {
+                    val existente = atividadeDao.buscarPorId(it.id!!)
+                    if (existente == null) {
+                        atividadeDao.inserir(it)
+                    } else {
+                        atividadeDao.atualizar(it)
+                    }
+                }
+            }
+
+            // SQLite → Firebase
+            val atividadesLocais = atividadeDao.listarPorUsuario(idUsuario)
+            atividadesLocais.forEach { atividade ->
+                firebase.document(idUsuario)
+                    .collection("atividades")
+                    .document(atividade.id!!)
+                    .set(atividade)
+                    .await()
+            }
+
+        } catch (e: Exception) {
+            Log.e("SYNC", "Erro ao sincronizar atividades", e)
         }
     }
 }
