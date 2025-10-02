@@ -21,7 +21,7 @@ import android.content.IntentFilter
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.core.content.ContextCompat
 import br.edu.utfpr.trabalhoconclusaocurso.data.repository.CoordenadaRepository
 import br.edu.utfpr.trabalhoconclusaocurso.services.DBHelper
 import br.edu.utfpr.trabalhoconclusaocurso.services.LocationService
@@ -142,15 +142,25 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
-        val filter = IntentFilter("LOCATION_UPDATE")
-        LocalBroadcastManager.getInstance(this).registerReceiver(locationReceiver, filter)
-        LocalBroadcastManager.getInstance(this).registerReceiver(finalReceiver, IntentFilter("FINAL_UPDATE"))
+        val locationFilter = IntentFilter("LOCATION_UPDATE")
+        ContextCompat.registerReceiver(
+            this,
+            locationReceiver,
+            locationFilter,
+            ContextCompat.RECEIVER_EXPORTED
+        )
+        val finalFilter = IntentFilter("FINAL_UPDATE")
+        ContextCompat.registerReceiver(
+            this,
+            finalReceiver,
+            finalFilter,
+            ContextCompat.RECEIVER_EXPORTED
+        )
     }
 
     override fun onPause() {
         super.onPause()
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(locationReceiver)
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(finalReceiver)
+        unregisterReceiver(finalReceiver)
     }
 
     fun OnClickOk(view: View) {

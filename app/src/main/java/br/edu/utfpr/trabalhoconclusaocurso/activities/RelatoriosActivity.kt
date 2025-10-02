@@ -119,7 +119,13 @@ class RelatoriosActivity : AppCompatActivity() {
 
     private fun configurarGraficoPace(atividades: List<Atividade>) {
         val entries = atividades.mapIndexed { index, atividade ->
-            Entry(index.toFloat(), atividade.velocidadeMedia.toFloat())
+            // Converter de km/h para min/km
+            val pace = if (atividade.velocidadeMedia > 0) {
+                60f / atividade.velocidadeMedia.toFloat()
+            } else {
+                0f // evita divisão por zero
+            }
+            Entry(index.toFloat(), pace)
         }
 
         val dataSet = LineDataSet(entries, "Pace médio (min/km)").apply {
@@ -137,7 +143,7 @@ class RelatoriosActivity : AppCompatActivity() {
             xAxis.valueFormatter = DateValueFormatter(atividades)
             xAxis.granularity = 1f
             xAxis.position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
-            axisLeft.valueFormatter = PaceValueFormatter()
+            axisLeft.valueFormatter = PaceValueFormatter() // mantém o formatador
             animateX(1000)
             invalidate()
         }

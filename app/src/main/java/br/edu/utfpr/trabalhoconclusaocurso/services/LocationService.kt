@@ -62,7 +62,7 @@ class LocationService : Service(){
         frequenciaCoordenadas =  if (frequencia > 0 && frequencia < 60) {
             (frequencia * 1000.0).toLong()
         } else {
-            5000L
+            2000L
         }
 
         startLocationUpdates()
@@ -221,7 +221,7 @@ class LocationService : Service(){
         intent.putExtra("paceMin", paceMin)
         intent.putExtra("paceSec", paceSec)
         intent.putExtra("duracao", duracao)
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+        sendBroadcast(intent)
     }
 
     private fun sendResToActivity(paceMin: Int,paceSec: Int, totalDistance: Double, velocidadeMedia: Double, calorias: Double, duracao: Double) {
@@ -232,7 +232,7 @@ class LocationService : Service(){
         intent.putExtra("paceMin", paceMin)
         intent.putExtra("paceSec", paceSec)
         intent.putExtra("duracao", duracao)
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+        sendBroadcast(intent)
     }
 
     private fun falar(texto: String) {

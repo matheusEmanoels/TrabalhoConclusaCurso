@@ -54,11 +54,11 @@ class SettingsActivity : AppCompatActivity() {
         usuario = SessaoUsuario.getUsuario()!!
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        seekBarFrequencia.progress = prefs.getInt(KEY_FREQUENCIA_ATUALIZACAO, 10)
+        seekBarFrequencia.progress = prefs.getInt(KEY_FREQUENCIA_ATUALIZACAO, 2)
         tvFrequenciaValue.text = "${seekBarFrequencia.progress}s"
 
-        seekBarDistancia.progress = prefs.getInt(KEY_DISTANCIA_DESEJADA, 100)
-        tvDistanciaValue.text = "${seekBarDistancia.progress}m"
+        seekBarDistancia.progress = prefs.getInt(KEY_DISTANCIA_DESEJADA, 10)
+        tvDistanciaValue.text = "${usuario.distanciaPreferida}km"
 
         checkFeedback.isChecked = prefs.getBoolean(KEY_FEEDBACK_AUDIO, true)
 

@@ -27,13 +27,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:max="60"
-                android:progress="10"/>
+                android:progress="2"/>
 
             <TextView
                 android:id="@+id/tvFrequenciaValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="10s"
+                android:text="2s"
                 android:gravity="center"/>
 
             <!-- Distância desejada -->
@@ -50,13 +50,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:max="100"
-                android:progress="100"/>
+                android:progress="15"/>
 
             <TextView
                 android:id="@+id/tvDistanciaValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="100km"
+                android:text="15km"
                 android:gravity="center"/>
 
             <!-- Feedback por áudio -->
