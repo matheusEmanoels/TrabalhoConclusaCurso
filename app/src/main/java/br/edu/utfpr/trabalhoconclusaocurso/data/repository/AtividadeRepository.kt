@@ -26,12 +26,22 @@ class AtividadeRepository(private val db: SQLiteDatabase) {
     suspend fun atualizar(atividade: Atividade) {
         atividadeDao.atualizar(atividade)
 
-        // Atividade vai como subcoleção de Usuario
         firebase.document(atividade.idUsuario)
             .collection("atividades")
             .document(atividade.id)
             .set(atividade)
             .await()
+    }
+
+    fun excluir(atividade: Atividade, onComplete: (Boolean) -> Unit) {
+        atividadeDao.excluir(atividade.id!!)
+
+        firebase.document(atividade.idUsuario)
+            .collection("atividades")
+            .document(atividade.id)
+            .delete()
+            .addOnSuccessListener { onComplete(true) }
+            .addOnFailureListener { onComplete(false) }
     }
 
     fun listarPorUsuarioLocal(idUsuario: String): List<Atividade> =

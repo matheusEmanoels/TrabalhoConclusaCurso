@@ -2,19 +2,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Conteúdo da tela com ScrollView -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:fitsSystemWindows="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:showDividers="middle">
+            android:orientation="vertical">
 
-            <!-- Frequência de atualização -->
+            <TextView
+                android:id="@+id/tvTitulo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="Configurações App"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:background="?attr/colorPrimary"
+                android:textColor="@android:color/white" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -36,7 +46,6 @@
                 android:text="2s"
                 android:gravity="center"/>
 
-            <!-- Distância desejada -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -59,7 +68,6 @@
                 android:text="15km"
                 android:gravity="center"/>
 
-            <!-- Feedback por áudio -->
             <CheckBox
                 android:id="@+id/checkFeedback"
                 android:layout_width="wrap_content"
@@ -69,28 +77,31 @@
 
             <Button
                 android:id="@+id/btnSaveConfig"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="Salvar Configurações"
                 android:layout_marginTop="24dp"/>
 
             <Button
                 android:id="@+id/btnSync"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="Sincronizar Dados"
                 android:layout_marginTop="16dp"/>
 
             <Button
                 android:id="@+id/btnLogout"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:backgroundTint="@color/error"
+                android:layout_gravity="center"
                 android:text="Sair"
                 android:layout_marginTop="24dp"/>
         </LinearLayout>
     </ScrollView>
 
-    <!-- Overlay de loading -->
     <FrameLayout
         android:id="@+id/layoutLoading"
         android:layout_width="match_parent"

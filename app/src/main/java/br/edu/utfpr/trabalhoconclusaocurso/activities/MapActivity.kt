@@ -29,15 +29,18 @@ import br.edu.utfpr.trabalhoconclusaocurso.utils.SessaoUsuario
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.UUID
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var btnIniciarParar: Button
-    private lateinit var btnRelatorios: Button
-    private lateinit var btnConfiguracoes: Button
+    private lateinit var btnRelatorios: ExtendedFloatingActionButton
+    private lateinit var btnConfiguracoes: ExtendedFloatingActionButton
     private lateinit var btnOk: Button
+    private lateinit var btnMore : FloatingActionButton
     private lateinit var cvResumo : CardView
     private lateinit var tvDistancia: TextView
     private lateinit var tvPace: TextView
@@ -49,6 +52,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private var isTracking = false
     private var polylineOptions = PolylineOptions().width(10f).color(android.graphics.Color.BLUE)
     private var primeiraPosicao = true
+    private var isFabOpen = true
     private val pontosPercurso = mutableListOf<LatLng>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,6 +84,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         btnIniciarParar.setBackgroundColor(getColor(R.color.success))
         btnRelatorios = findViewById(R.id.btn_rel)
         btnConfiguracoes = findViewById(R.id.btn_settings)
+        btnMore = findViewById(R.id.fab_main)
         btnOk = findViewById(R.id.btn_ok)
         btnOk.setBackgroundColor(getColor(R.color.success))
         cvResumo = findViewById(R.id.info_panel)
@@ -140,6 +145,17 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         startActivity(intent)
     }
 
+    fun OnMoreClick(view: View) {
+        if (isFabOpen) {
+            btnRelatorios.hide()
+            btnConfiguracoes.hide()
+        } else {
+            btnRelatorios.show()
+            btnConfiguracoes.show()
+        }
+        isFabOpen = !isFabOpen
+    }
+
     override fun onResume() {
         super.onResume()
         val locationFilter = IntentFilter("LOCATION_UPDATE")
@@ -156,6 +172,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             finalFilter,
             ContextCompat.RECEIVER_EXPORTED
         )
+
+        OnMoreClick(this.btnMore)
     }
 
     override fun onPause() {

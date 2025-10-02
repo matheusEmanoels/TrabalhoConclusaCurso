@@ -1,0 +1,39 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Gráfico de linha: evolução da distância -->
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/lineChartDistancia"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Gráfico de linha: pace -->
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/lineChartPace"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Gráfico de barras: duração semanal -->
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/barChartDuracao"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Gráfico de barras: distância diária -->
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/barChartDistanciaDiaria"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginTop="16dp"/>
+    </LinearLayout>
+</ScrollView>

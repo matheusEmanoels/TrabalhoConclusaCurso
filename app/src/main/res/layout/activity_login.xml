@@ -95,7 +95,7 @@
                 android:textSize="18sp"
                 android:paddingVertical="16dp"
                 android:background="@drawable/button_secondary"
-                android:textColor="@color/primary"
+                android:textColor="@color/white"
                 android:onClick="OnClickCadastrar"/>
 
         </LinearLayout>

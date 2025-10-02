@@ -33,6 +33,11 @@ class AtividadeDao(private val db: SQLiteDatabase) {
         db.update("Atividade", values, "id = ?", arrayOf(atividade.id))
     }
 
+    fun excluir(id: String) {
+        db.delete("atividade", "id = ?", arrayOf(id.toString()))
+        db.delete("coordenada", "id_atividade = ?", arrayOf(id.toString()))
+    }
+
     fun listarPorUsuario(idUsuario: String): List<Atividade> {
         val lista = mutableListOf<Atividade>()
         val cursor: Cursor = db.query(
