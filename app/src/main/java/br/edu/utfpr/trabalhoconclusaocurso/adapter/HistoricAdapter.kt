@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class HistoricAdapter (
+class HistoricAdapter(
     private val atividades: MutableList<Atividade>,
     private val listener: OnItemClickListener
 ) : RecyclerView.Adapter<HistoricAdapter.HistoricoViewHolder>() {
@@ -23,6 +23,7 @@ class HistoricAdapter (
     }
 
     class HistoricoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val tvNome: TextView = itemView.findViewById(R.id.tvNome)
         val tvData: TextView = itemView.findViewById(R.id.tvData)
         val tvDistancia: TextView = itemView.findViewById(R.id.tvDistancia)
         val tvDuracao: TextView = itemView.findViewById(R.id.tvDuracao)
@@ -39,12 +40,9 @@ class HistoricAdapter (
     override fun onBindViewHolder(holder: HistoricoViewHolder, position: Int) {
         val atividade = atividades[position]
 
-        val timestamp = try {
-            atividade.dataHora.toLong()
-        } catch (e: Exception) {
-            0L
-        }
+        holder.tvNome.text = atividade.nome
 
+        val timestamp = atividade.dataHora.toLongOrNull() ?: 0L
         val date = Date(timestamp)
         val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         holder.tvData.text = sdf.format(date)
@@ -54,13 +52,12 @@ class HistoricAdapter (
         val horas = atividade.duracao / 3600
         val minutos = (atividade.duracao % 3600) / 60
         holder.tvDuracao.text = "Duração: ${horas}h ${minutos}m"
-
         holder.btnRenomear.setOnClickListener {
-            listener?.onRenomear(atividade, position)
+            listener.onRenomear(atividade, position)
         }
 
         holder.btnExcluir.setOnClickListener {
-            listener?.onExcluir(atividade, position)
+            listener.onExcluir(atividade, position)
         }
     }
 
