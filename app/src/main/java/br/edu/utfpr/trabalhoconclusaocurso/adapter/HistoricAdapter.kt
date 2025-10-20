@@ -1,5 +1,6 @@
 package br.edu.utfpr.trabalhoconclusaocurso.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,6 +8,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import br.edu.utfpr.trabalhoconclusaocurso.R
+import br.edu.utfpr.trabalhoconclusaocurso.activities.MapActivity
 import br.edu.utfpr.trabalhoconclusaocurso.data.model.Atividade
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -41,8 +43,12 @@ class HistoricAdapter(
         val atividade = atividades[position]
 
         holder.tvNome.text = atividade.nome
+        val timestamp = try {
+            atividade.dataHora.toLong()
+        } catch (e: Exception) {
+            0L
+        }
 
-        val timestamp = atividade.dataHora.toLongOrNull() ?: 0L
         val date = Date(timestamp)
         val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         holder.tvData.text = sdf.format(date)
@@ -55,9 +61,15 @@ class HistoricAdapter(
         holder.btnRenomear.setOnClickListener {
             listener.onRenomear(atividade, position)
         }
-
         holder.btnExcluir.setOnClickListener {
             listener.onExcluir(atividade, position)
+        }
+
+        holder.itemView.setOnClickListener { view ->
+            val context = view.context
+            val intent = Intent(context, MapActivity::class.java)
+            intent.putExtra("ATIVIDADE_ID", atividade.id)
+            context.startActivity(intent)
         }
     }
 

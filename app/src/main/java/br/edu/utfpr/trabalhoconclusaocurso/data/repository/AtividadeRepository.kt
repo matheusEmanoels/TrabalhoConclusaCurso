@@ -47,6 +47,10 @@ class AtividadeRepository(private val db: SQLiteDatabase) {
     fun listarPorUsuarioLocal(idUsuario: String): List<Atividade> =
         atividadeDao.listarPorUsuario(idUsuario)
 
+    fun buscarPorId(idAtividade: String) : Atividade?{
+        return atividadeDao.buscarPorId(idAtividade)
+    }
+
     suspend fun sincronizar(idUsuario: String) {
         try {
             // Firebase → SQLite

@@ -163,9 +163,9 @@ class LocationService : Service(){
             idUsuario = usuarioLocal?.id!!,
             nome = "Corrida",
             dataHora = startTime.toString(),
-            duracao = duracaoSegundos.toLong(), // em segundos
+            duracao = duracaoSegundos.toLong(),
             distancia = totalDistance,
-            velocidadeMedia = velocidadeMedia, // km/h correto
+            velocidadeMedia = velocidadeMedia,
             caloriasPerdidas = calorias
         )
         serviceScope.launch {

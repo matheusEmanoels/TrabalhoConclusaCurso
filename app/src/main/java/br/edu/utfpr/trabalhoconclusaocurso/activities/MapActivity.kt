@@ -22,6 +22,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import br.edu.utfpr.trabalhoconclusaocurso.data.repository.AtividadeRepository
 import br.edu.utfpr.trabalhoconclusaocurso.data.repository.CoordenadaRepository
 import br.edu.utfpr.trabalhoconclusaocurso.services.DBHelper
 import br.edu.utfpr.trabalhoconclusaocurso.services.LocationService
@@ -49,6 +50,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var atividadeId: String
     private lateinit var dbHelper: DBHelper
     private lateinit var coordenadaRepository: CoordenadaRepository
+    private lateinit var atividadeRepository: AtividadeRepository
     private var isTracking = false
     private var polylineOptions = PolylineOptions().width(10f).color(android.graphics.Color.BLUE)
     private var primeiraPosicao = true
@@ -62,6 +64,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         coordenadaRepository = CoordenadaRepository(dbHelper.writableDatabase)
+        atividadeRepository = AtividadeRepository(dbHelper.writableDatabase)
 
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -102,6 +105,22 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         isTracking = carregarFlag(this)
+
+        val atividadeIdHistorico = intent.getStringExtra("ATIVIDADE_ID")
+        if (atividadeIdHistorico != null) {
+            isTracking = false
+            btnIniciarParar.visibility = View.GONE
+            btnMore.visibility = View.GONE
+
+            val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+            mapFragment.getMapAsync { googleMap ->
+                map = googleMap
+                carregarHistorico(atividadeIdHistorico)
+            }
+        } else {
+            val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+            mapFragment.getMapAsync(this)
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -178,21 +197,20 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onPause() {
         super.onPause()
+        unregisterReceiver(locationReceiver)
         unregisterReceiver(finalReceiver)
     }
 
     fun OnClickOk(view: View) {
         cvResumo.visibility = View.GONE
         map.clear()
-        polylineOptions = PolylineOptions()
+        polylineOptions = PolylineOptions().width(10f).color(android.graphics.Color.BLUE) // Reinicia a linha
         tvDistancia.text = "Distância: 0.00 km"
         tvPace.text = "Pace Médio: 0'00\" /km"
         tvCalorias.text = "Calorias: 0 kcal"
         tvDuracao.text = "Duração: 00:00:00"
-
         btnIniciarParar.visibility = View.VISIBLE
-        btnRelatorios.visibility = View.VISIBLE
-        btnConfiguracoes.visibility = View.VISIBLE
+        btnMore.visibility = View.VISIBLE
         pontosPercurso.clear()
     }
 
@@ -262,13 +280,72 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    fun carregarHistorico(atividadeId: String) {
+        val coordenadas = coordenadaRepository.listarLocal(atividadeId)
+        val atividade = atividadeRepository.buscarPorId(atividadeId)
+        polylineOptions = PolylineOptions().width(10f).color(android.graphics.Color.BLUE)
+
+        pontosPercurso.clear()
+        for (coord in coordenadas) {
+            val ponto = LatLng(coord.latitude, coord.longitude)
+            polylineOptions.add(ponto)
+            pontosPercurso.add(ponto)
+        }
+
+        map.clear()
+        map.addPolyline(polylineOptions)
+
+        if (pontosPercurso.isNotEmpty()) {
+            val boundsBuilder = com.google.android.gms.maps.model.LatLngBounds.Builder()
+            for (p in pontosPercurso) {
+                boundsBuilder.include(p)
+            }
+            val bounds = boundsBuilder.build()
+            val padding = 100
+            val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+            map.animateCamera(cameraUpdate)
+        }
+
+        atividade?.let {
+            val pace = if (atividade?.distancia!! > 0) (atividade.duracao / 60.0) / (atividade.distancia / 1000.0) else 0.0
+            val paceMin = pace.toInt()
+            val paceSec = ((pace - paceMin) * 60).toInt()
+            tvDistancia.text = "Distância: %.2f km".format(it.distancia / 1000)
+            tvPace.text = "Pace Médio: %d'%02d\" /km".format(paceMin, paceSec)
+            tvCalorias.text = "Calorias: %.0f kcal".format(it.caloriasPerdidas)
+
+            val duracao = it.duracao
+            val horas = (duracao / 3600).toInt()
+            val minutos = ((duracao % 3600) / 60).toInt()
+            val segundos = (duracao % 60).toInt()
+            tvDuracao.text = "Duração: %02d:%02d:%02d".format(horas, minutos, segundos)
+
+            cvResumo.visibility = View.VISIBLE
+        }
+
+        if (pontosPercurso.isNotEmpty()) {
+            val boundsBuilder = com.google.android.gms.maps.model.LatLngBounds.Builder()
+            for (p in pontosPercurso) {
+                boundsBuilder.include(p)
+            }
+            val bounds = boundsBuilder.build()
+            val padding = 100
+            val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+            map.animateCamera(cameraUpdate)
+        }
+
+        btnIniciarParar.visibility = View.GONE
+        btnRelatorios.visibility = View.GONE
+        btnConfiguracoes.visibility = View.GONE
+        btnMore.visibility = View.GONE
+    }
+
     private fun redirectToLogin() {
         val intent = Intent(this, LoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
     }
-
 
     fun salvarFlag(context: Context, isTracking: Boolean) {
         val sharedPref = context.getSharedPreferences("IsTracking", Context.MODE_PRIVATE)
