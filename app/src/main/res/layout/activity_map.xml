@@ -99,6 +99,17 @@
             android:text="Iniciar"
             android:onClick="OnClickIniciarParar"/>
 
+        <Button
+            android:id="@+id/btn_finalizar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Finalizar"
+            android:backgroundTint="@color/error"
+            android:visibility="gone"
+            android:onClick="OnClickFinalizar"
+            android:layout_gravity="bottom|center"
+            android:layout_marginBottom="80dp"/>
+
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/btn_rel"
             android:layout_width="wrap_content"
