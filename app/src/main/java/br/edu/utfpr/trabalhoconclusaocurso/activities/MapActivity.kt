@@ -193,7 +193,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 map.addMarker(MarkerOptions().position(ponto).title("Posição atual"))
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(ponto, 17f))
 
-                atualizarResumo(intent)
+                if(intent != null){
+                    atualizarResumo(intent)
+                }
             }
         }
     }
@@ -205,6 +207,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             btnFinalizar.visibility = View.GONE
             btnRelatorios.visibility = View.GONE
             btnConfiguracoes.visibility = View.GONE
+
+            if (intent != null) {
+                atualizarResumo(intent)
+            }
 
             if (pontosPercurso.isNotEmpty()) {
                 val boundsBuilder = com.google.android.gms.maps.model.LatLngBounds.Builder()

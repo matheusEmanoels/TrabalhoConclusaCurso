@@ -7,7 +7,7 @@
     android:id="@+id/main"
     tools:context=".activities.MainActivity">
 
-    <!-- Imagem de fundo que se adapta à tela -->
+
     <ImageView
         android:id="@+id/background_image"
         android:layout_width="match_parent"
@@ -16,7 +16,6 @@
         android:scaleType="centerCrop"
         android:contentDescription="@string/background_desc" />
 
-    <!-- Overlay escuro para melhor contraste -->
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -30,7 +29,6 @@
         android:gravity="center">
 
 
-        <!-- Título -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -40,14 +38,12 @@
             android:textStyle="bold"
             android:layout_marginBottom="60dp" />
 
-        <!-- Container dos botões -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center">
 
-            <!-- Botão de Login -->
             <Button
                 android:id="@+id/login_button"
                 android:layout_width="wrap_content"
@@ -61,7 +57,6 @@
                 android:layout_marginBottom="14dp"
                 android:onClick="OnClickLogin"/>
 
-            <!-- Botão de Cadastro -->
             <Button
                 android:id="@+id/signup_button"
                 android:layout_width="wrap_content"

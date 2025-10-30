@@ -34,6 +34,8 @@ class LocationService : Service() {
     private var usuarioLocal: Usuario? = null
     private var isPaused = false
     private var frequenciaCoordenadas = 2000L
+    private var distanciaAcumulada = 0.0
+    private var proximoAviso = 500
     private lateinit var dbHelper: DBHelper
     private lateinit var atividadeRepository: AtividadeRepository
     private lateinit var coordenadaRepository: CoordenadaRepository
@@ -128,6 +130,10 @@ class LocationService : Service() {
                 )
                 serviceScope.launch {
                     coordenadaRepository.salvar(coordenada, usuarioLocal?.id!!)
+                }
+
+                if(SettingsActivity.Config.isFeedbackAudioLigado(this@LocationService)) {
+                    atualizarProgresso(totalDistance, duracaoSegundos, velocidadeMedia)
                 }
 
                 sendLocationToActivity(location, totalDistance, velocidadeMedia, calorias, paceMin, paceSec, duracaoSegundos)
@@ -236,6 +242,54 @@ class LocationService : Service() {
             velocidade >= 9.5 -> 9.8
             velocidade >= 8.0 -> 8.0
             else -> 5.0
+        }
+    }
+
+    private fun falar(texto: String) {
+        val intent = Intent(this, TTSService::class.java)
+        intent.putExtra("texto_para_falar", texto)
+        startService(intent)
+    }
+
+    fun atualizarProgresso(distanciaNova: Double, horas: Double, velocidadeMedia: Double) {
+        distanciaAcumulada = distanciaNova
+
+        val objetivoMetros = (usuarioLocal?.distanciaPreferida?.toFloat() ?: 1f) * 1000f
+
+        if (distanciaAcumulada >= proximoAviso) {
+            val km = distanciaAcumulada / 1000f
+
+            val minutesPerKm = if (km > 0) (horas / 60.0) / km else 0.0
+            val paceMin = minutesPerKm.toInt()
+            val paceSec = ((minutesPerKm - paceMin) * 60).toInt()
+            val paceStr =
+                String.format("%d minutos e %02d segundos por quilômetro", paceMin, paceSec)
+
+            val restanteMetros = (objetivoMetros - distanciaAcumulada).coerceAtLeast(0.0)
+            val restanteStr = if (restanteMetros >= 1000) {
+                String.format("%.2f quilômetros", restanteMetros / 1000f)
+            } else {
+                String.format("%.0f metros", restanteMetros)
+            }
+
+            val distanciaStr = if (distanciaAcumulada < 1000) {
+                String.format("%.0f metros", distanciaAcumulada)
+            } else {
+                String.format("%.2f quilômetros", km)
+            }
+
+            if (restanteMetros == 0.0) {
+                falar("Parabéns! Você atingiu seu objetivo de ${"%.2f".format(objetivoMetros / 1000f)} quilômetros!")
+            } else {
+                falar(
+                    "Você completou $distanciaStr. " +
+                            "Sua velocidade média é ${"%.1f".format(velocidadeMedia)} quilômetros por hora. " +
+                            "Seu ritmo médio é de $paceStr. " +
+                            "Faltam $restanteStr para o seu objetivo."
+                )
+            }
+
+            proximoAviso += 500
         }
     }
 }
