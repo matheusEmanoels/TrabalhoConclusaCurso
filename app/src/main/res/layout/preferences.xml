@@ -1,11 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?android:attr/windowBackground"
+    android:fitsSystemWindows="true"
+    tools:context=".activities.SettingsActivity">
 
+    <!-- Cabeçalho fixo -->
+    <TextView
+        android:id="@+id/tvTitulo"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        android:text="Configurações do App"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:background="?attr/colorPrimary"
+        android:textColor="@android:color/white"
+        android:elevation="4dp"
+        android:fitsSystemWindows="true" />
+
+    <!-- Conteúdo rolável -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp"
+        android:layout_marginTop="56dp"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="16dp"
+        android:clipToPadding="false"
         android:fitsSystemWindows="true">
 
         <LinearLayout
@@ -13,95 +37,95 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvTitulo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="Configurações App"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:background="?attr/colorPrimary"
-                android:textColor="@android:color/white" />
-
+            <!-- Frequência -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Frequência de Atualização (segundos)"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp" />
 
             <SeekBar
                 android:id="@+id/seekBarFrequencia"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:max="60"
-                android:progress="2"/>
+                android:progress="2" />
 
             <TextView
                 android:id="@+id/tvFrequenciaValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="2s"
-                android:gravity="center"/>
+                android:textSize="16sp"
+                android:gravity="center"
+                android:layout_marginBottom="12dp" />
 
+            <!-- Distância -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Distância Desejada (Quilometros)"
+                android:text="Distância Desejada (quilômetros)"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp" />
 
             <SeekBar
                 android:id="@+id/seekBarDistancia"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:max="100"
-                android:progress="15"/>
+                android:progress="15" />
 
             <TextView
                 android:id="@+id/tvDistanciaValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="15km"
-                android:gravity="center"/>
+                android:textSize="16sp"
+                android:gravity="center"
+                android:layout_marginBottom="12dp" />
 
+            <!-- Feedback -->
             <CheckBox
                 android:id="@+id/checkFeedback"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ativar feedback por áudio"
-                android:layout_marginTop="16dp"/>
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp" />
 
+            <!-- Botões -->
             <Button
                 android:id="@+id/btnSaveConfig"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:text="Salvar Configurações"
-                android:layout_marginTop="24dp"/>
+                android:textAllCaps="false"
+                android:layout_marginTop="8dp" />
 
             <Button
                 android:id="@+id/btnSync"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:text="Sincronizar Dados"
-                android:layout_marginTop="16dp"/>
+                android:textAllCaps="false"
+                android:layout_marginTop="12dp" />
 
             <Button
                 android:id="@+id/btnLogout"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/error"
-                android:layout_gravity="center"
                 android:text="Sair"
-                android:layout_marginTop="24dp"/>
+                android:textAllCaps="false"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="@color/error" />
         </LinearLayout>
     </ScrollView>
 
+    <!-- Tela de carregamento -->
     <FrameLayout
         android:id="@+id/layoutLoading"
         android:layout_width="match_parent"
@@ -109,15 +133,13 @@
         android:visibility="gone"
         android:background="#88000000"
         android:clickable="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true">
+        android:focusable="true">
 
         <ProgressBar
             android:id="@+id/progressLoading"
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center" />
     </FrameLayout>
 </FrameLayout>

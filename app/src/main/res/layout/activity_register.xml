@@ -6,6 +6,7 @@
     android:id="@+id/login"
     tools:context=".activities.RegisterActivity">
 
+    <!-- Imagem de fundo -->
     <ImageView
         android:id="@+id/background_image"
         android:layout_width="match_parent"
@@ -14,11 +15,13 @@
         android:scaleType="centerCrop"
         android:contentDescription="@string/background_desc" />
 
+    <!-- Overlay escuro -->
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#66000000" />
 
+    <!-- Conteúdo rolável -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -29,13 +32,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="24dp"
-            android:gravity="center">
+            android:gravity="center_vertical">
 
+            <!-- Container de campos alinhados à esquerda -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:gravity="center">
+                android:gravity="start">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -44,15 +48,16 @@
                     android:textSize="16sp"
                     android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="8dp" />
 
                 <EditText
                     android:id="@+id/etNome"
-                    android:layout_width="300dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/editbox_background"
                     android:inputType="text"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="12dp"
+                    android:padding="10dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -61,15 +66,16 @@
                     android:textSize="16sp"
                     android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="8dp" />
 
                 <EditText
                     android:id="@+id/etNomeUsuario"
-                    android:layout_width="300dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/editbox_background"
                     android:inputType="text"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="12dp"
+                    android:padding="10dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -78,15 +84,16 @@
                     android:textSize="16sp"
                     android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="8dp" />
 
                 <EditText
                     android:id="@+id/etCpf"
-                    android:layout_width="300dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/editbox_background"
                     android:inputType="text"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="12dp"
+                    android:padding="10dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -95,15 +102,16 @@
                     android:textSize="16sp"
                     android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="8dp" />
 
                 <EditText
                     android:id="@+id/etSenha"
-                    android:layout_width="300dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/editbox_background"
                     android:inputType="textPassword"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="12dp"
+                    android:padding="10dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -112,15 +120,16 @@
                     android:textSize="16sp"
                     android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="8dp" />
 
                 <EditText
                     android:id="@+id/etPeso"
-                    android:layout_width="300dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/editbox_background"
                     android:inputType="numberDecimal"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="12dp"
+                    android:padding="10dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -129,15 +138,16 @@
                     android:textSize="16sp"
                     android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="8dp" />
 
                 <EditText
                     android:id="@+id/etAltura"
-                    android:layout_width="300dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/editbox_background"
                     android:inputType="numberDecimal"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="12dp"
+                    android:padding="10dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -146,15 +156,16 @@
                     android:textSize="16sp"
                     android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="8dp" />
 
                 <EditText
                     android:id="@+id/etIdade"
-                    android:layout_width="300dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/editbox_background"
                     android:inputType="number"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="12dp"
+                    android:padding="10dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -163,36 +174,44 @@
                     android:textSize="16sp"
                     android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="8dp" />
 
                 <EditText
                     android:id="@+id/etDistancia"
-                    android:layout_width="300dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:drawable/editbox_background"
                     android:inputType="numberDecimal"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="24dp"
+                    android:padding="10dp" />
 
+                <!-- Botão de Cadastro -->
                 <Button
                     android:id="@+id/signup_button"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/signup"
                     android:textAllCaps="false"
                     android:textSize="18sp"
-                    android:paddingVertical="16dp"
+                    android:paddingVertical="12dp"
                     android:background="@drawable/button_secondary"
                     android:textColor="@color/white"
                     android:onClick="OnClickCriarConta" />
             </LinearLayout>
 
+            <!-- Espaço antes da versão -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="40dp" />
+
+            <!-- Versão centralizada -->
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/app_version"
                 android:textSize="12sp"
                 android:textColor="@color/white"
-                android:layout_marginTop="40dp" />
+                android:gravity="center" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

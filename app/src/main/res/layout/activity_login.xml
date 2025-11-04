@@ -7,7 +7,7 @@
     android:id="@+id/login"
     tools:context=".activities.LoginActivity">
 
-    <!-- Imagem de fundo que se adapta à tela -->
+    <!-- Imagem de fundo -->
     <ImageView
         android:id="@+id/background_image"
         android:layout_width="match_parent"
@@ -16,26 +16,27 @@
         android:scaleType="centerCrop"
         android:contentDescription="@string/background_desc" />
 
-    <!-- Overlay escuro para melhor contraste -->
+    <!-- Overlay escuro -->
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#66000000" />
 
+    <!-- Conteúdo principal -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="24dp"
-        android:gravity="center">
+        android:gravity="center_vertical"
+        android:layout_gravity="start">
 
-
-        <!-- Container dos botões -->
+        <!-- Container dos campos e botões -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="start">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -44,14 +45,15 @@
                 android:textSize="24sp"
                 android:textColor="@color/white"
                 android:textStyle="bold"
-                android:layout_marginBottom="20dp" />
+                android:layout_marginBottom="8dp" />
 
             <EditText
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:drawable/editbox_background"
                 android:id="@+id/etUsername"
-                android:layout_marginBottom="20dp" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/editbox_background"
+                android:layout_marginBottom="16dp"
+                android:padding="10dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -60,57 +62,61 @@
                 android:textSize="24sp"
                 android:textColor="@color/white"
                 android:textStyle="bold"
-                android:layout_marginBottom="20dp" />
+                android:layout_marginBottom="8dp" />
 
             <EditText
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:drawable/editbox_background"
                 android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/editbox_background"
                 android:inputType="textPassword"
-                android:layout_marginBottom="20dp" />
-
+                android:layout_marginBottom="24dp"
+                android:padding="10dp" />
 
             <!-- Botão de Login -->
             <Button
                 android:id="@+id/login_button"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/login"
                 android:textAllCaps="false"
                 android:textSize="18sp"
-                android:paddingVertical="16dp"
+                android:paddingVertical="12dp"
                 android:background="@drawable/button_primary"
                 android:textColor="@color/white"
-                android:layout_marginBottom="16dp"
-                android:onClick="OnClickLogin"/>
+                android:layout_marginBottom="12dp"
+                android:onClick="OnClickLogin" />
 
             <!-- Botão de Cadastro -->
             <Button
                 android:id="@+id/signup_button"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/signup"
                 android:textAllCaps="false"
                 android:textSize="18sp"
-                android:paddingVertical="16dp"
+                android:paddingVertical="12dp"
                 android:background="@drawable/button_secondary"
                 android:textColor="@color/white"
-                android:onClick="OnClickCadastrar"/>
-
+                android:onClick="OnClickCadastrar" />
         </LinearLayout>
 
-        <!-- Versão do app -->
+        <!-- Espaço antes da versão -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="40dp" />
+
+        <!-- Versão do app centralizada -->
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/app_version"
             android:textSize="12sp"
             android:textColor="@color/white"
-            android:layout_marginTop="40dp" />
-
+            android:gravity="center" />
     </LinearLayout>
 
+    <!-- Tela de carregamento -->
     <FrameLayout
         android:id="@+id/layoutLoading"
         android:layout_width="match_parent"
@@ -127,6 +133,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:indeterminate="true"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center" />
     </FrameLayout>
 </RelativeLayout>

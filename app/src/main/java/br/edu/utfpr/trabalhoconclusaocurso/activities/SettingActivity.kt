@@ -110,7 +110,7 @@ class SettingsActivity : AppCompatActivity() {
                     Toast.makeText(this@SettingsActivity, "Erro ao sincronizar!", Toast.LENGTH_SHORT).show()
                     Log.e("SYNC", "Erro ao sincronizar tudo", e)
                 } finally {
-                    showLoading(false) // esconde overlay
+                    showLoading(false)
                 }
             }
         }
